@@ -1,0 +1,135 @@
+{
+  "auth": {
+    "login": "登录",
+    "profile": "个人中心"
+  },
+  "aurora": {
+    "auth": {
+      "title": "管理你的 AI Agent",
+      "description": "安全地观察、配置与扩展 AuroraBot。"
+    },
+    "nav": {
+      "overview": "首页",
+      "observation": "Agent 观察",
+      "chat": "聊天",
+      "configuration": "配置",
+      "resources": "资源",
+      "extensions": "扩展",
+      "operations": "运维"
+    },
+    "dashboard": {
+      "eyebrow": "AURORABOT CONTROL PLANE",
+      "title": "Agent 运行概览",
+      "subtitle": "集中查看运行状态、用量、成本与存储健康度。当前数据来自开发 Mock 接口。",
+      "mock": "Mock 数据",
+      "agent": "Agent",
+      "restart": "重启 Agent",
+      "restartTitle": "确认重启此 Agent？",
+      "restartDescription": "第一阶段只会发送 Mock 请求，不会操作真实 Agent。",
+      "restartAccepted": "已接收 Mock 重启请求",
+      "online": "在线",
+      "offline": "离线",
+      "degraded": "状态异常",
+      "uptime": "连续运行",
+      "version": "版本",
+      "requests": "请求数",
+      "cost": "总花费",
+      "tokens": "Token 消耗",
+      "latency": "平均响应",
+      "messages": "消息数",
+      "cache": "Prompt 缓存",
+      "storage": "存储占用",
+      "trend": "请求趋势",
+      "tokenTrend": "Token 构成",
+      "input": "输入",
+      "output": "输出",
+      "loadError": "暂时无法读取 Dashboard 数据",
+      "retry": "重试"
+    },
+    "placeholder": {
+      "badge": "API 待接入",
+      "description": "页面结构与领域 API 边界已准备完成。收到 OpenAPI 文件后，将在此接入真实数据与操作。",
+      "boundary": "接口模块",
+      "state": "当前状态",
+      "stateValue": "第一阶段功能骨架",
+      "notice": "此页面不会发送伪造的生产请求。"
+    },
+    "features": {
+      "observation": {
+        "title": "Agent 观察",
+        "description": "组件健康、事件、告警与运行状态。",
+        "api": "agents / metrics / logs"
+      },
+      "chatConsole": {
+        "title": "实时聊天",
+        "description": "面向 Agent 的实时对话入口。流式协议等待 OpenAPI 确认。",
+        "api": "conversations"
+      },
+      "conversations": {
+        "title": "会话管理",
+        "description": "浏览、筛选和管理历史会话。",
+        "api": "conversations"
+      },
+      "agentSettings": {
+        "title": "Agent 设置",
+        "description": "管理 Agent 的基础行为与运行参数。",
+        "api": "agents"
+      },
+      "models": {
+        "title": "模型管理",
+        "description": "维护模型提供方、模型与调用策略。",
+        "api": "models"
+      },
+      "prompts": {
+        "title": "Prompt 管理",
+        "description": "维护系统 Prompt、版本与缓存策略。",
+        "api": "prompts"
+      },
+      "emoji": {
+        "title": "表情包",
+        "description": "管理 Agent 可用的图片与表情资源。",
+        "api": "resources"
+      },
+      "expressions": {
+        "title": "表达方式",
+        "description": "配置语言风格、表达习惯与模板。",
+        "api": "resources"
+      },
+      "blockedWords": {
+        "title": "黑话与屏蔽词",
+        "description": "维护术语解释、替换规则和安全词表。",
+        "api": "resources"
+      },
+      "learning": {
+        "title": "行为学习",
+        "description": "查看与管理 Agent 的行为学习记录。",
+        "api": "learning"
+      },
+      "memory": {
+        "title": "长期记忆",
+        "description": "检索、审查和维护长期记忆条目。",
+        "api": "memory"
+      },
+      "plugins": {
+        "title": "插件管理",
+        "description": "查看已安装插件及其启用状态。",
+        "api": "plugins"
+      },
+      "marketplace": {
+        "title": "插件市场",
+        "description": "浏览可用扩展；第一阶段不会执行安装。",
+        "api": "plugins"
+      },
+      "logs": {
+        "title": "运行日志",
+        "description": "按时间、级别和组件检索运行日志。",
+        "api": "logs"
+      },
+      "diagnostics": {
+        "title": "基础诊断",
+        "description": "检查 API、模型、存储与扩展连接状态。",
+        "api": "agents / logs"
+      }
+    }
+  }
+}

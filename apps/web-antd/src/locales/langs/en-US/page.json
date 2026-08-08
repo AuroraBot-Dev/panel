@@ -1,0 +1,135 @@
+{
+  "auth": {
+    "login": "Login",
+    "profile": "Profile"
+  },
+  "aurora": {
+    "auth": {
+      "title": "Manage your AI agent",
+      "description": "Observe, configure, and extend AuroraBot securely."
+    },
+    "nav": {
+      "overview": "Overview",
+      "observation": "Agent Observability",
+      "chat": "Chat",
+      "configuration": "Configuration",
+      "resources": "Resources",
+      "extensions": "Extensions",
+      "operations": "Operations"
+    },
+    "dashboard": {
+      "eyebrow": "AURORABOT CONTROL PLANE",
+      "title": "Agent overview",
+      "subtitle": "Monitor runtime health, usage, cost, and storage. Data currently comes from the development Mock API.",
+      "mock": "Mock data",
+      "agent": "Agent",
+      "restart": "Restart agent",
+      "restartTitle": "Restart this agent?",
+      "restartDescription": "Phase one only sends a Mock request and never touches a real agent.",
+      "restartAccepted": "Mock restart request accepted",
+      "online": "Online",
+      "offline": "Offline",
+      "degraded": "Degraded",
+      "uptime": "Uptime",
+      "version": "Version",
+      "requests": "Requests",
+      "cost": "Total cost",
+      "tokens": "Token usage",
+      "latency": "Avg. latency",
+      "messages": "Messages",
+      "cache": "Prompt cache",
+      "storage": "Storage",
+      "trend": "Request trend",
+      "tokenTrend": "Token mix",
+      "input": "Input",
+      "output": "Output",
+      "loadError": "Dashboard data is temporarily unavailable",
+      "retry": "Retry"
+    },
+    "placeholder": {
+      "badge": "API pending",
+      "description": "The page structure and domain API boundary are ready. Real data and actions will be connected after the OpenAPI file arrives.",
+      "boundary": "API module",
+      "state": "Current state",
+      "stateValue": "Phase-one product skeleton",
+      "notice": "This page does not send fabricated production requests."
+    },
+    "features": {
+      "observation": {
+        "title": "Agent observability",
+        "description": "Component health, events, alerts, and runtime status.",
+        "api": "agents / metrics / logs"
+      },
+      "chatConsole": {
+        "title": "Live chat",
+        "description": "A real-time agent conversation surface. Streaming awaits the OpenAPI contract.",
+        "api": "conversations"
+      },
+      "conversations": {
+        "title": "Conversation management",
+        "description": "Browse, filter, and manage conversation history.",
+        "api": "conversations"
+      },
+      "agentSettings": {
+        "title": "Agent settings",
+        "description": "Manage core behavior and runtime settings.",
+        "api": "agents"
+      },
+      "models": {
+        "title": "Model management",
+        "description": "Manage providers, models, and routing policy.",
+        "api": "models"
+      },
+      "prompts": {
+        "title": "Prompt management",
+        "description": "Manage system prompts, versions, and cache policy.",
+        "api": "prompts"
+      },
+      "emoji": {
+        "title": "Emoji packs",
+        "description": "Manage image and emoji resources available to the agent.",
+        "api": "resources"
+      },
+      "expressions": {
+        "title": "Expression styles",
+        "description": "Configure language styles, habits, and templates.",
+        "api": "resources"
+      },
+      "blockedWords": {
+        "title": "Terms and blocked words",
+        "description": "Manage terminology, replacements, and safety lists.",
+        "api": "resources"
+      },
+      "learning": {
+        "title": "Behavior learning",
+        "description": "Review and manage agent learning records.",
+        "api": "learning"
+      },
+      "memory": {
+        "title": "Long-term memory",
+        "description": "Search, review, and maintain memory entries.",
+        "api": "memory"
+      },
+      "plugins": {
+        "title": "Plugin management",
+        "description": "View installed plugins and their activation state.",
+        "api": "plugins"
+      },
+      "marketplace": {
+        "title": "Plugin marketplace",
+        "description": "Browse extensions; phase one never executes installs.",
+        "api": "plugins"
+      },
+      "logs": {
+        "title": "Runtime logs",
+        "description": "Search logs by time, level, and component.",
+        "api": "logs"
+      },
+      "diagnostics": {
+        "title": "Diagnostics",
+        "description": "Check API, model, storage, and extension connectivity.",
+        "api": "agents / logs"
+      }
+    }
+  }
+}
