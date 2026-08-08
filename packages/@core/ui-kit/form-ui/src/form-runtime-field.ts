@@ -40,8 +40,7 @@ export function createRuntimeFieldComponent(
           const wrappedValidators = { ...validators };
           for (const key of asyncValidatorKeys) {
             const validator = validators[key] as
-              | AsyncFieldValidator
-              | undefined;
+              AsyncFieldValidator | undefined;
             if (!validator) {
               continue;
             }
@@ -60,8 +59,7 @@ export function createRuntimeFieldComponent(
 
         return () => {
           const validators = attrs.validators as
-            | Record<string, any>
-            | undefined;
+            Record<string, any> | undefined;
           return h(
             fieldComponent,
             {

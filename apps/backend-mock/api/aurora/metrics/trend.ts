@@ -4,10 +4,16 @@ import { unAuthorizedResponse, useResponseSuccess } from '~/utils/response';
 
 const base = [122, 174, 146, 238, 202, 316, 271, 405, 342, 477, 429, 556];
 
+function rangeMultiplier(range: unknown) {
+  if (range === '30d') return 28;
+  if (range === '7d') return 7;
+  return 1;
+}
+
 export default eventHandler((event) => {
   if (!verifyAccessToken(event)) return unAuthorizedResponse(event);
   const { range } = getQuery(event);
-  const multiplier = range === '30d' ? 28 : range === '7d' ? 7 : 1;
+  const multiplier = rangeMultiplier(range);
   const suffix = range === '24h' || !range ? ':00' : '';
   return useResponseSuccess(
     base.map((requests, index) => ({

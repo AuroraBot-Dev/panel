@@ -276,8 +276,7 @@ export function useViewedRow<T = any>(
   // ========== 标记已读 ==========
   function markAsViewed(record: T) {
     const key = (record as Record<string, any>)[options.keyField] as
-      | number
-      | string;
+      number | string;
     if (key === null || key === undefined) return;
 
     updateViewedSet((set) => {
@@ -303,8 +302,7 @@ export function useViewedRow<T = any>(
   // ========== 查询 ==========
   function isViewed(record: T): boolean {
     const key = (record as Record<string, any>)[options.keyField] as
-      | number
-      | string;
+      number | string;
     return viewedSet.value.has(key);
   }
 

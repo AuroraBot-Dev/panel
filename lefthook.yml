@@ -49,9 +49,9 @@ pre-commit:
       glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts}'
       run: pnpm exec oxlint --fix --type-aware --threads=4 --no-error-on-unmatched-pattern {staged_files}
       stage_fixed: true
-    - name: oxfmt
-      glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts,json,jsonc}'
-      run: pnpm exec oxfmt --threads=4 --no-error-on-unmatched-pattern {staged_files}
+    - name: prettier
+      glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts,json,jsonc,md,mdx,yaml,yml,css,less,scss}'
+      run: pnpm exec prettier --write {staged_files}
       stage_fixed: true
     - name: eslint
       glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts}'

@@ -214,7 +214,7 @@
     "timezone": "时区",
     "timezonePosition": "时区按钮位置"
   },
-  "antd": {
+  "naive": {
     "tabLabel": "Antd 拓展",
     "title": "业务偏好",
     "fields": {

@@ -11,7 +11,7 @@ interface LintCommandOptions {
    */
   format?: boolean;
   /**
-   * Number of threads for oxfmt and oxlint (default: 2).
+   * Number of threads for oxlint (default: 2).
    */
   threads?: number;
 }
@@ -25,7 +25,7 @@ const CPU_CORE_THRESHOLD = 4;
 /**
  * 可用内存阈值 8 GB。
  * 仅当空余内存大于阈值且当前可用内存大于该值时，
- * oxfmt / oxlint 默认线程数才提升到 4，否则使用 2。
+ * oxlint 默认线程数才提升到 4，否则使用 2。
  */
 const FREE_MEMORY_THRESHOLD = 8 * 1024 ** 3;
 
@@ -113,7 +113,7 @@ async function runLint({ format, threads }: LintCommandOptions) {
   if (format) {
     await runSerial([
       ['oxlint', ['--fix', '--type-aware', threadsArg]],
-      ['oxfmt', [threadsArg]],
+      ['prettier', ['--write', '.']],
       ['eslint', ['.', '--cache', '--fix']],
       ['stylelint', ['**/*.{vue,css,less,scss}', '--cache', '--fix']],
     ]);
@@ -122,7 +122,7 @@ async function runLint({ format, threads }: LintCommandOptions) {
 
   const commands: Command[] = [
     ['oxlint', ['--type-aware', threadsArg]],
-    ['oxfmt', ['--check', threadsArg]],
+    ['prettier', ['--check', '.']],
     ['eslint', ['.', '--cache']],
     ['stylelint', ['**/*.{vue,css,less,scss}', '--cache']],
   ];
@@ -139,7 +139,7 @@ function defineLintCommand(cac: CAC) {
     .command('lint')
     .usage('Batch execute project lint check.')
     .option('--format', 'Format lint problem.')
-    .option('--threads <count>', 'Number of threads for oxfmt and oxlint.')
+    .option('--threads <count>', 'Number of threads for oxlint.')
     .action(runLint);
 }
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/prettierrc",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "proseWrap": "never",
+  "semi": true,
+  "singleQuote": true,
+  "quoteProps": "as-needed",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "arrowParens": "always",
+  "trailingComma": "all",
+  "endOfLine": "lf",
+  "embeddedLanguageFormatting": "auto",
+  "htmlWhitespaceSensitivity": "css",
+  "overrides": [
+    {
+      "files": [
+        "*.json",
+        "*.json5",
+        "*.jsonc",
+        "*.code-workspace",
+        "**/*.json",
+        "**/*.json5",
+        "**/*.jsonc",
+        "**/*.code-workspace"
+      ],
+      "options": {
+        "trailingComma": "none",
+        "quoteProps": "preserve",
+        "singleQuote": false
+      }
+    }
+  ]
+}

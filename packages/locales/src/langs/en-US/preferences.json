@@ -214,7 +214,7 @@
     "timezone": "Enable Timezone",
     "timezonePosition": "Timezone Position"
   },
-  "antd": {
+  "naive": {
     "tabLabel": "Antd Extension",
     "title": "Business Preferences",
     "fields": {

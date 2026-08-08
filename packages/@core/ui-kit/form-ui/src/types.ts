@@ -20,8 +20,7 @@ export interface FormCodec<
 }
 
 export type FormFieldName<TValues extends FormValues = FormValues> =
-  | Extract<keyof TValues, string>
-  | (Record<never, never> & string);
+  Extract<keyof TValues, string> | (Record<never, never> & string);
 
 export type FormFieldValue<
   TValues extends FormValues,
@@ -46,8 +45,7 @@ type Breakpoints = '2xl:' | '3xl:' | '' | 'lg:' | 'md:' | 'sm:' | 'xl:';
 type GridCols = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13;
 
 export type WrapperClassType =
-  | `${Breakpoints}grid-cols-${GridCols}`
-  | (Record<never, never> & string);
+  `${Breakpoints}grid-cols-${GridCols}` | (Record<never, never> & string);
 
 export type FormItemClassType =
   | `${Breakpoints}cols-end-${'auto' | GridCols}`
@@ -351,8 +349,7 @@ export type CustomRenderType = (() => Component | string) | string;
 
 // 动态渲染参数
 export type CustomParamsRenderType<TValues extends FormValues = FormValues> =
-  | ((ctx: FormSchemaContext<TValues>) => Component | string)
-  | string;
+  ((ctx: FormSchemaContext<TValues>) => Component | string) | string;
 
 export type FormSchemaRuleType =
   | 'required'
@@ -477,8 +474,7 @@ export interface FormItemDependenciesResolve<
 }
 
 export type FormItemDependencies<TValues extends FormValues = FormValues> =
-  | FormItemDependenciesLegacy<TValues>
-  | FormItemDependenciesResolve<TValues>;
+  FormItemDependenciesLegacy<TValues> | FormItemDependenciesResolve<TValues>;
 
 type ComponentProps<TValues extends FormValues = FormValues> =
   | ((ctx: FormSchemaContext<TValues>) => MaybeComponentProps)
@@ -720,10 +716,7 @@ export type FieldMappingTimeItem = [
   string,
   [string, string],
   (
-    | ((value: any, fieldName: string) => any)
-    | [string, string]
-    | null
-    | string
+    ((value: any, fieldName: string) => any) | [string, string] | null | string
   )?,
 ];
 

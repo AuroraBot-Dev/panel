@@ -18,11 +18,7 @@ type ThemeModeType = 'auto' | 'dark' | 'light';
  * none 不显示
  */
 type PreferencesButtonPositionType =
-  | 'auto'
-  | 'fixed'
-  | 'header'
-  | 'none'
-  | 'user-dropdown';
+  'auto' | 'fixed' | 'header' | 'none' | 'user-dropdown';
 
 type BuiltinThemeType =
   | 'custom'

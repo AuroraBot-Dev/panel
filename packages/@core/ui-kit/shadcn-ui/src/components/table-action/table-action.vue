@@ -118,9 +118,7 @@ function onActionClick(action: ActionItem) {
  */
 function onContentInteractOutside(event: Event) {
   const target = (event as CustomEvent).detail?.originalEvent?.target as
-    | HTMLElement
-    | null
-    | undefined;
+    HTMLElement | null | undefined;
   if (target?.closest('[data-slot="popover-content"]')) {
     event.preventDefault();
   }

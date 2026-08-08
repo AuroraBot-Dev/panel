@@ -1,6 +1,13 @@
-# AuroraBot Dashboard
+# AuroraBot Panel
 
-AuroraBot 的 AI Agent 运行与配置面板。第一阶段包含登录/RBAC、运行概览、完整业务导航、领域 API 边界和本地 Mock 服务。
+AuroraBot 的 AI Agent 运行与配置面板，基于 Vue 3 + Vite + Naive UI。包含登录/RBAC、运行概览、完整业务导航、领域 API 边界和本地 Mock 服务。
+
+## 技术栈
+
+- Vue 3、TypeScript、Pinia、Vue Router
+- [Naive UI](https://www.naiveui.com/) 组件库
+- [Prettier](https://prettier.io/) 代码格式化
+- Vben Admin 5.7 的 monorepo 工程结构（pnpm workspace + turbo）
 
 ## 开发
 
@@ -18,21 +25,20 @@ pnpm dev
 ```bash
 pnpm typecheck
 pnpm build
+pnpm format
 ```
 
 ## 接入真实 API
 
 1. 将后端 OpenAPI 文档保存为 `openapi/openapi.yaml`。
 2. 运行 `pnpm api:generate` 更新传输层类型。
-3. 在 `apps/web-antd/src/api/modules` 中实现或校准领域适配器。
+3. 在 `apps/web-naive/src/api/modules` 中实现或校准领域适配器。
 4. 将 `VITE_API_MODE` 设置为 `remote`，并配置 `VITE_GLOB_API_URL`。
 
-页面只能通过 `src/services` 和 `src/api/modules` 访问后端，不应直接拼接接口地址。
+页面只能通过 `src/api/modules` 访问后端，不应直接拼接接口地址。
 
 ## 当前边界
 
 - 已实现：Dashboard Mock 指标、Agent 列表与 Mock 重启、业务路由骨架。
 - 待 OpenAPI：真实聊天流、配置写入、资源管理、学习/记忆、插件和日志接口。
 - 本阶段不包含数据库、Agent 后端或生产部署。
-
-本项目基于 MIT 许可的 Vben Admin 5.7 精简改造，原始许可见 [LICENSE](./LICENSE)。

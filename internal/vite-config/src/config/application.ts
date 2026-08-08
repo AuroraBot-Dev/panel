@@ -44,7 +44,7 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       nitroMockOptions: {},
       print: !isBuild,
       printInfoMap: {
-        'Vben Admin Docs': 'https://doc.vben.pro',
+        'AuroraBot Panel': 'https://github.com/AuroraBot-Dev/panel',
       },
       pwa: true,
       pwaOptions: getDefaultPwaOptions(appTitle),

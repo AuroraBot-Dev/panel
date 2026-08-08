@@ -40,7 +40,6 @@
   "oxc.enable": true,
   "oxc.typeAware": true,
   "oxc.configPath": "oxlint.config.ts",
-  "oxc.fmt.configPath": "oxfmt.config.ts",
   "eslint.useFlatConfig": true,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
@@ -48,33 +47,33 @@
     "source.fixAll.stylelint": "explicit",
     "source.organizeImports": "never"
   },
-  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[html]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[css]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[scss]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[json]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[markdown]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[jsonc]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[vue]": {
-    "editor.defaultFormatter": "oxc.oxc-vscode"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
   // extensions
@@ -214,7 +213,6 @@
 
   "i18n-ally.localesPaths": [
     "packages/locales/src/langs",
-    "playground/src/locales/langs",
     "apps/*/src/locales/langs"
   ],
   "i18n-ally.pathMatcher": "{locale}/{namespace}.{ext}",
@@ -235,7 +233,7 @@
     "*.env": "$(capture).env.*",
     "README.md": "README*,CHANGELOG*,LICENSE,CNAME",
     "package.json": "pnpm-lock.yaml,pnpm-workspace.yaml,.gitattributes,.gitignore,.gitpod.yml,.npmrc,.browserslistrc,.node-version,.git*,.tazerc.json",
-    "oxlint.config.ts": ".eslintignore,.stylelintignore,.commitlintrc.*,stylelint.config.*,.lintstagedrc.mjs,cspell.json,lefthook.yml,oxfmt.config.*,eslint.config.*"
+    "oxlint.config.ts": ".eslintignore,.stylelintignore,.commitlintrc.*,stylelint.config.*,.lintstagedrc.mjs,cspell.json,lefthook.yml,.prettierrc.json,.prettierignore,eslint.config.*"
   },
   "commentTranslate.hover.enabled": false,
   "commentTranslate.multiLineMerge": true,
