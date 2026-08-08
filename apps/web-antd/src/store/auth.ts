@@ -10,96 +10,89 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { notification } from 'ant-design-vue';
 import { defineStore } from 'pinia';
 
-import { getAccessCodesApi, getUserInfoApi, loginApi, logoutApi } from '#/api';
+import { loginApi, logoutApi } from '#/api';
 import { $t } from '#/locales';
+
+const OWNER_INFO: UserInfo = {
+  avatar: preferences.app.defaultAvatar,
+  desc: 'AuroraBot panel owner',
+  homePath: '/overview',
+  realName: 'Aurora Owner',
+  roles: ['admin'],
+  token: '',
+  userId: 'panel-owner',
+  username: 'owner',
+};
+
+const OWNER_ACCESS_CODES = ['panel:owner', 'panel:read', 'panel:write'];
 
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
   const router = useRouter();
-
   const loginLoading = ref(false);
 
-  /**
-   * 异步处理登录操作
-   * Asynchronously handle the login process
-   * @param params 登录表单数据
-   */
   async function authLogin(
     params: Recordable<any>,
     onSuccess?: () => Promise<void> | void,
   ) {
-    // 异步处理用户登录操作并获取 accessToken
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const { accessToken } = await loginApi(params);
+      const session = await loginApi({
+        token_login: String(params.token_login || '').trim(),
+      });
+      if (!session.token) return { userInfo };
 
-      // 如果成功获取到 accessToken
-      if (accessToken) {
-        accessStore.setAccessToken(accessToken);
+      accessStore.setAccessToken(session.token);
+      accessStore.setAccessTokenExpiresAt(session.expires_at);
+      accessStore.setAccessCodes(OWNER_ACCESS_CODES);
+      userInfo = { ...OWNER_INFO, token: session.token };
+      userStore.setUserInfo(userInfo);
 
-        // 获取用户信息并存储到 accessStore 中
-        const [fetchUserInfoResult, accessCodes] = await Promise.all([
-          fetchUserInfo(),
-          getAccessCodesApi(),
-        ]);
-
-        userInfo = fetchUserInfoResult;
-
-        userStore.setUserInfo(userInfo);
-        accessStore.setAccessCodes(accessCodes);
-
-        if (accessStore.loginExpired) {
-          accessStore.setLoginExpired(false);
-        } else {
-          onSuccess
-            ? await onSuccess?.()
-            : await router.push(
-                userInfo.homePath || preferences.app.defaultHomePath,
-              );
-        }
-
-        if (userInfo?.realName) {
-          notification.success({
-            description: `${$t('authentication.loginSuccessDesc')}:${userInfo?.realName}`,
-            duration: 3,
-            message: $t('authentication.loginSuccess'),
-          });
-        }
+      if (accessStore.loginExpired) {
+        accessStore.setLoginExpired(false);
+      } else if (onSuccess) {
+        await onSuccess();
+      } else {
+        await router.push(userInfo.homePath || preferences.app.defaultHomePath);
       }
+
+      notification.success({
+        description: `${$t('authentication.loginSuccessDesc')}:${userInfo.realName}`,
+        duration: 3,
+        message: $t('authentication.loginSuccess'),
+      });
     } finally {
       loginLoading.value = false;
     }
-
-    return {
-      userInfo,
-    };
+    return { userInfo };
   }
 
-  async function logout(redirect: boolean = true) {
-    try {
-      await logoutApi();
-    } catch {
-      // 不做任何处理
+  async function logout(redirect = true) {
+    if (accessStore.accessToken) {
+      try {
+        await logoutApi();
+      } catch {
+        // The local session must be removed even if the server is unavailable.
+      }
     }
     resetAllStores();
-    accessStore.setLoginExpired(false);
-
-    // 回登录页带上当前路由地址
     await router.replace({
       path: LOGIN_PATH,
       query: redirect
-        ? {
-            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-          }
+        ? { redirect: encodeURIComponent(router.currentRoute.value.fullPath) }
         : {},
     });
   }
 
   async function fetchUserInfo() {
-    const userInfo = await getUserInfoApi();
+    const userInfo = {
+      ...OWNER_INFO,
+      token: accessStore.accessToken || '',
+    };
     userStore.setUserInfo(userInfo);
+    accessStore.setAccessCodes(OWNER_ACCESS_CODES);
     return userInfo;
   }
 
@@ -107,11 +100,5 @@ export const useAuthStore = defineStore('auth', () => {
     loginLoading.value = false;
   }
 
-  return {
-    $reset,
-    authLogin,
-    fetchUserInfo,
-    loginLoading,
-    logout,
-  };
+  return { $reset, authLogin, fetchUserInfo, loginLoading, logout };
 });

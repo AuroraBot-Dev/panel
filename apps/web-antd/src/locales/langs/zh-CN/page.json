@@ -46,6 +46,113 @@
       "loadError": "暂时无法读取 Dashboard 数据",
       "retry": "重试"
     },
+    "panel": {
+      "refresh": "刷新",
+      "loading": "正在连接后端…",
+      "empty": "暂无数据",
+      "apply": "应用",
+      "search": "搜索",
+      "detail": "详情",
+      "action": "操作",
+      "status": "状态",
+      "summary": "摘要",
+      "output": "输出",
+      "createdAt": "创建时间",
+      "updatedAt": "更新时间",
+      "loadMore": "加载更多",
+      "auth": {
+        "token": "启动令牌",
+        "tokenPlaceholder": "输入 data/ops/Token.txt 中的令牌",
+        "tokenRequired": "请输入启动令牌",
+        "help": "令牌仅用于换取面板会话，不会保存在浏览器中。",
+        "online": "AuroraBot 后端在线",
+        "offline": "无法连接 AuroraBot 后端"
+      },
+      "overview": {
+        "description": "集中查看 AuroraBot 的实时运行状态、使用趋势与资源概览。",
+        "systemStatus": "运行状态",
+        "queueOverview": "调度与队列",
+        "activeTasks": "活动 Task",
+        "activeAgents": "活动 Agent",
+        "pendingActivities": "待处理 Activity",
+        "pendingMessages": "待处理消息",
+        "inboxEvents": "Inbox 事件",
+        "cost": "模型费用",
+        "memoryFacts": "长期事实",
+        "memoryMessages": "记忆窗口",
+        "recentTasks": "最近 Task",
+        "runtime": "运行时",
+        "modelDispatch": "模型调度",
+        "modelActivities": "活动模型调用",
+        "pendingModel": "待处理模型调用",
+        "pendingTool": "待处理工具调用",
+        "totalAgents": "已记录 Agent",
+        "activityTrend": "调用趋势",
+        "tokenTrend": "Token 使用趋势",
+        "taskDistribution": "Task 状态分布",
+        "costDistribution": "费用角色分布",
+        "placeholderData": "占位数据",
+        "sampleData": "示例数据",
+        "realData": "实时数据",
+        "unavailable": "暂不可用",
+        "dispatching": "调度中",
+        "dispatchStopped": "调度停止",
+        "partialLoadError": "部分实时数据加载失败",
+        "totalStorage": "资源总占用",
+        "range24h": "24 小时",
+        "range7d": "7 天",
+        "range30d": "30 天",
+        "task": "Task",
+        "modelCalls": "模型调用",
+        "noTasks": "暂无 Task",
+        "noCost": "暂无费用",
+        "dueInboxSessions": "到期 Inbox 会话",
+        "sources": {
+          "status": "运行状态",
+          "tasks": "Task 列表",
+          "agents": "Agent 列表",
+          "cost": "模型费用",
+          "memory": "记忆状态"
+        },
+        "storage": {
+          "images": "图片",
+          "emoji": "表情资源",
+          "logs": "日志",
+          "datasets": "数据集"
+        }
+      },
+      "observation": {
+        "tasks": "Tasks",
+        "agents": "Agents",
+        "events": "因果事件"
+      },
+      "chat": {
+        "polling": "轮询降级",
+        "placeholder": "向 AuroraBot 发送消息（Ctrl+Enter 发送）",
+        "attachment": "上传附件",
+        "uploaded": "附件上传成功",
+        "send": "发送"
+      },
+      "conversations": {
+        "description": "按 Session ID 查看消息投影、因果事件与模型输出。"
+      },
+      "logs": {
+        "clear": "清空终端",
+        "clearHelp": "该 HTTP 操作只返回 console 控制结果，不会清除浏览器数据。",
+        "clearResult": "后端已返回 console clear 控制结果",
+        "consoleScope": "这些设置作用于 AuroraBot 本地终端输出，属于 console_only 操作。"
+      },
+      "diagnostics": {
+        "invalidJson": "请输入有效 JSON",
+        "objectRequired": "AMP 必须是 JSON 对象",
+        "completed": "操作已完成",
+        "pumpHelp": "确认显式推进 Engine，turns：",
+        "shutdownPhrase": "请输入 SHUTDOWN 确认短语",
+        "shutdownHelp": "关机将停止 AuroraBot 进程并断开面板连接，此操作不可由面板撤销。",
+        "mutationWarning": "该操作会向 Engine 注入真实 AMP 事件。请在提交前核对内容。",
+        "unmapped": "后端目录中发现尚未适配的 Operation"
+      }
+    },
     "placeholder": {
       "badge": "API 待接入",
       "description": "页面结构与领域 API 边界已准备完成。收到 OpenAPI 文件后，将在此接入真实数据与操作。",

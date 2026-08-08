@@ -1,10 +1,9 @@
-export * from './agents';
 export * from './auth';
 export type * from './conversations';
 export type * from './learning';
 export type * from './logs';
 export type * from './memory';
-export * from './metrics';
+export * from './panel';
 export type * from './models';
 export type * from './plugins';
 export type * from './prompts';

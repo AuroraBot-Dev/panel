@@ -1,104 +1,144 @@
 <script lang="ts" setup>
-import type { DashboardSnapshot, TimeRange } from '#/types/aurora';
+import type {
+  AgentTransport,
+  AiCost,
+  EngineStatus,
+  MemoryStatus,
+  TaskTransport,
+} from '#/types/aurora';
 
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import type { DashboardRange } from './dashboard-data';
+
+import { computed, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
 
 import {
   Alert,
   Button,
   Card,
-  message,
-  Modal,
+  Empty,
   Progress,
   Segmented,
-  Select,
   Skeleton,
   Statistic,
+  Table,
   Tag,
 } from 'ant-design-vue';
 
-import { apiMode } from '#/api/config';
-import { $t } from '#/locales';
 import {
-  getDashboardSnapshot,
-  requestAgentRestart,
-} from '#/services/dashboard';
+  getAiCost,
+  getEngineStatus,
+  getMemoryStatus,
+  listAgents,
+  listTasks,
+} from '#/api';
+import { $t } from '#/locales';
 
-const range = ref<TimeRange>('24h');
-const selectedAgentId = ref<string>();
-const snapshot = ref<DashboardSnapshot>();
+import { dashboardSamples } from './dashboard-data';
+import OverviewCharts from './overview-charts.vue';
+
+type DataSource = 'agents' | 'cost' | 'memory' | 'status' | 'tasks';
+
 const loading = ref(true);
-const error = ref(false);
-let controller: AbortController | undefined;
+const initialized = ref(false);
+const failedSources = ref<DataSource[]>([]);
+const range = ref<DashboardRange>('24h');
+const status = ref<EngineStatus>();
+const tasks = ref<TaskTransport[]>([]);
+const agents = ref<AgentTransport[]>([]);
+const cost = ref<AiCost>();
+const memory = ref<MemoryStatus>();
 
-const selectedAgent = computed(() =>
-  snapshot.value?.agents.find((agent) => agent.id === selectedAgentId.value),
+const sample = computed(() => dashboardSamples[range.value]);
+const totalTokens = computed(
+  () => sample.value.inputTokens + sample.value.outputTokens,
 );
-const maxRequests = computed(() =>
-  Math.max(...(snapshot.value?.trend.map((point) => point.requests) ?? [1]), 1),
+const recentTasks = computed(() =>
+  [...tasks.value]
+    .sort((left, right) => right.updated_at.localeCompare(left.updated_at))
+    .slice(0, 5),
 );
-const maxStorage = computed(() =>
-  Math.max(
-    ...(snapshot.value?.metrics.storage.map((item) => item.sizeBytes) ?? [1]),
-    1,
-  ),
+const totalStorage = computed(() =>
+  sample.value.storage.reduce((total, item) => total + item.sizeBytes, 0),
 );
+const rangeOptions = computed(() => [
+  { label: $t('page.aurora.panel.overview.range24h'), value: '24h' },
+  { label: $t('page.aurora.panel.overview.range7d'), value: '7d' },
+  { label: $t('page.aurora.panel.overview.range30d'), value: '30d' },
+]);
+const failedDescription = computed(() =>
+  failedSources.value
+    .map((source) => $t(`page.aurora.panel.overview.sources.${source}`))
+    .join(', '),
+);
+const taskColumns = computed(() => [
+  {
+    dataIndex: 'task_id',
+    ellipsis: true,
+    key: 'task_id',
+    title: $t('page.aurora.panel.overview.task'),
+  },
+  {
+    dataIndex: 'status',
+    key: 'status',
+    title: $t('page.aurora.panel.status'),
+  },
+  {
+    dataIndex: 'root_summary',
+    ellipsis: true,
+    key: 'summary',
+    title: $t('page.aurora.panel.summary'),
+  },
+  {
+    dataIndex: 'updated_at',
+    key: 'updated_at',
+    title: $t('page.aurora.panel.updatedAt'),
+  },
+]);
 
-async function loadDashboard() {
-  controller?.abort();
-  controller = new AbortController();
+async function load() {
   loading.value = true;
-  error.value = false;
-  try {
-    const data = await getDashboardSnapshot(
-      selectedAgentId.value,
-      range.value,
-      controller.signal,
-    );
-    snapshot.value = data;
-    selectedAgentId.value ||= data.agents[0]?.id;
-  } catch (loadError) {
-    if ((loadError as Error).name !== 'CanceledError') error.value = true;
-  } finally {
-    loading.value = false;
-  }
-}
+  failedSources.value = [];
 
-function changeAgent(value: unknown) {
-  if (typeof value !== 'string') return;
-  selectedAgentId.value = value;
-  void loadDashboard();
+  const [statusResult, tasksResult, agentsResult, costResult, memoryResult] =
+    await Promise.allSettled([
+      getEngineStatus(),
+      listTasks({ limit: 64 }),
+      listAgents(),
+      getAiCost(),
+      getMemoryStatus(),
+    ]);
+
+  if (statusResult.status === 'fulfilled') status.value = statusResult.value;
+  else failedSources.value.push('status');
+
+  if (tasksResult.status === 'fulfilled') tasks.value = tasksResult.value;
+  else failedSources.value.push('tasks');
+
+  if (agentsResult.status === 'fulfilled') agents.value = agentsResult.value;
+  else failedSources.value.push('agents');
+
+  if (costResult.status === 'fulfilled') cost.value = costResult.value;
+  else failedSources.value.push('cost');
+
+  if (memoryResult.status === 'fulfilled') memory.value = memoryResult.value;
+  else failedSources.value.push('memory');
+
+  loading.value = false;
+  initialized.value = true;
 }
 
 function changeRange(value: number | string) {
-  range.value = value as TimeRange;
-  void loadDashboard();
+  range.value = value as DashboardRange;
 }
 
-function confirmRestart() {
-  if (!selectedAgentId.value) return;
-  Modal.confirm({
-    title: $t('page.aurora.dashboard.restartTitle'),
-    content: $t('page.aurora.dashboard.restartDescription'),
-    okButtonProps: { danger: true },
-    async onOk() {
-      await requestAgentRestart(selectedAgentId.value!);
-      message.success($t('page.aurora.dashboard.restartAccepted'));
-    },
-  });
-}
-
-function statusText(status?: string) {
-  return $t(`page.aurora.dashboard.${status ?? 'offline'}`);
-}
-
-function formatCount(value = 0) {
-  return new Intl.NumberFormat(undefined, { notation: 'compact' }).format(
-    value,
-  );
+function statusColor(value: string) {
+  if (['ACTIVE', 'READY'].includes(value)) return 'processing';
+  if (['COMPLETED', 'SILENT'].includes(value)) return 'success';
+  if (['ERROR', 'FAILED'].includes(value)) return 'error';
+  if (['BUDGET_EXHAUSTED', 'CANCELLED'].includes(value)) return 'warning';
+  return 'default';
 }
 
 function formatBytes(value = 0) {
@@ -107,138 +147,142 @@ function formatBytes(value = 0) {
   return `${(value / 1024 ** 3).toFixed(1)} GB`;
 }
 
-function formatUptime(value = 0) {
-  const days = Math.floor(value / 86_400);
-  const hours = Math.floor((value % 86_400) / 3600);
-  return `${days}d ${hours}h`;
+function formatDate(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
-onMounted(loadDashboard);
-onBeforeUnmount(() => controller?.abort());
+onMounted(load);
 </script>
 
 <template>
   <Page
-    :description="$t('page.aurora.dashboard.subtitle')"
+    :description="$t('page.aurora.panel.overview.description')"
     :title="$t('page.aurora.dashboard.title')"
   >
-    <template #title>
-      <div class="flex items-center gap-2 text-lg font-semibold">
-        {{ $t('page.aurora.dashboard.title') }}
-        <Tag v-if="apiMode === 'mock'" color="orange">
-          {{ $t('page.aurora.dashboard.mock') }}
-        </Tag>
-      </div>
-    </template>
-
     <template #extra>
       <div
         class="dashboard-actions flex flex-wrap items-center justify-end gap-2"
       >
-        <Select
-          :aria-label="$t('page.aurora.dashboard.agent')"
-          :loading="loading"
-          :options="
-            snapshot?.agents.map((item) => ({
-              label: item.name,
-              value: item.id,
-            }))
-          "
-          :value="selectedAgentId"
-          class="w-44"
-          @change="changeAgent"
-        />
         <Segmented
-          :options="['24h', '7d', '30d']"
+          :options="rangeOptions"
           :value="range"
           @change="changeRange"
         />
-        <Button danger :disabled="!selectedAgentId" @click="confirmRestart">
-          <IconifyIcon icon="lucide:rotate-cw" />
-          {{ $t('page.aurora.dashboard.restart') }}
+        <Button :loading="loading" @click="load">
+          {{ $t('page.aurora.panel.refresh') }}
         </Button>
       </div>
     </template>
 
     <Alert
-      v-if="error"
+      v-if="failedSources.length"
       class="mb-4"
-      :message="$t('page.aurora.dashboard.loadError')"
+      :description="failedDescription"
+      :message="$t('page.aurora.panel.overview.partialLoadError')"
       show-icon
-      type="error"
+      type="warning"
     >
       <template #action>
-        <Button size="small" @click="loadDashboard">
+        <Button size="small" @click="load">
           {{ $t('page.aurora.dashboard.retry') }}
         </Button>
       </template>
     </Alert>
 
-    <Skeleton v-if="loading && !snapshot" active :paragraph="{ rows: 10 }" />
+    <Skeleton v-if="loading && !initialized" active :paragraph="{ rows: 10 }" />
 
-    <template v-else-if="snapshot">
+    <template v-else>
       <section class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card :title="$t('page.aurora.dashboard.agent')">
-          <div class="flex items-center gap-4">
-            <div
-              class="bg-primary/10 text-primary flex size-14 items-center justify-center rounded-full text-2xl"
-            >
-              <IconifyIcon icon="lucide:bot" />
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="truncate text-lg font-semibold">
-                {{ selectedAgent?.name }}
-              </div>
-              <Tag
-                :color="selectedAgent?.status === 'online' ? 'green' : 'orange'"
-              >
-                {{ statusText(selectedAgent?.status) }}
-              </Tag>
-            </div>
-          </div>
-          <div class="mt-5 grid grid-cols-2 gap-4 border-t pt-4">
-            <div>
-              <div class="text-muted-foreground text-xs">
-                {{ $t('page.aurora.dashboard.uptime') }}
-              </div>
-              <div class="mt-1 font-medium">
-                {{ formatUptime(selectedAgent?.uptimeSeconds) }}
-              </div>
-            </div>
-            <div>
-              <div class="text-muted-foreground text-xs">
-                {{ $t('page.aurora.dashboard.version') }}
-              </div>
-              <div class="mt-1 font-medium">{{ selectedAgent?.version }}</div>
-            </div>
+        <Card :title="$t('page.aurora.panel.overview.systemStatus')">
+          <template #extra>
+            <Tag :color="status ? 'green' : 'default'">
+              {{
+                status
+                  ? $t('page.aurora.dashboard.online')
+                  : $t('page.aurora.panel.overview.unavailable')
+              }}
+            </Tag>
+          </template>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-5">
+            <Statistic
+              :title="$t('page.aurora.panel.overview.activeTasks')"
+              :value="status?.active_tasks ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.activeAgents')"
+              :value="status?.active_agents ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.memoryFacts')"
+              :value="memory?.facts ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.memoryMessages')"
+              :value="memory?.window_messages ?? '--'"
+            />
           </div>
         </Card>
 
-        <Card title="Capabilities">
-          <div class="mb-4 text-2xl font-semibold">
-            {{ selectedAgent?.features.length ?? 0 }}
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <Tag v-for="item in selectedAgent?.features" :key="item">
-              {{ item }}
+        <Card :title="$t('page.aurora.panel.overview.queueOverview')">
+          <template #extra>
+            <Tag
+              :color="status?.model_dispatch_active ? 'processing' : 'default'"
+            >
+              {{
+                status?.model_dispatch_active
+                  ? $t('page.aurora.panel.overview.dispatching')
+                  : $t('page.aurora.panel.overview.dispatchStopped')
+              }}
             </Tag>
+          </template>
+          <div class="grid grid-cols-2 gap-x-6 gap-y-5">
+            <Statistic
+              :title="$t('page.aurora.panel.overview.pendingActivities')"
+              :value="status?.pending_activities ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.pendingMessages')"
+              :value="status?.pending_messages ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.pendingModel')"
+              :value="status?.pending_model_activities ?? '--'"
+            />
+            <Statistic
+              :title="$t('page.aurora.panel.overview.pendingTool')"
+              :value="status?.pending_tool_activities ?? '--'"
+            />
           </div>
         </Card>
 
         <Card :title="$t('page.aurora.dashboard.storage')">
+          <template #extra>
+            <Tag color="orange">
+              {{ $t('page.aurora.panel.overview.sampleData') }}
+            </Tag>
+          </template>
+          <div class="mb-4 flex items-end justify-between">
+            <Statistic
+              :title="$t('page.aurora.panel.overview.totalStorage')"
+              :value="formatBytes(totalStorage)"
+            />
+          </div>
           <div
-            v-for="item in snapshot.metrics.storage"
-            :key="item.label"
+            v-for="item in sample.storage"
+            :key="item.key"
             class="mb-3 last:mb-0"
           >
             <div class="mb-1 flex items-center justify-between text-sm">
-              <span>{{ item.label }}</span>
-              <span class="text-muted-foreground">
-                {{ formatBytes(item.sizeBytes) }}
-              </span>
+              <span>{{
+                $t(`page.aurora.panel.overview.storage.${item.key}`)
+              }}</span>
+              <span class="text-muted-foreground">{{
+                formatBytes(item.sizeBytes)
+              }}</span>
             </div>
             <Progress
-              :percent="Math.round((item.sizeBytes / maxStorage) * 100)"
+              :percent="Math.round((item.sizeBytes / totalStorage) * 100)"
               :show-info="false"
               size="small"
             />
@@ -249,118 +293,204 @@ onBeforeUnmount(() => controller?.abort());
       <section
         class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6"
       >
-        <Card>
-          <Statistic
-            :title="$t('page.aurora.dashboard.requests')"
-            :value="snapshot.metrics.requests"
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.requests')
+            }}</span>
+            <Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag>
+          </div>
+          <Statistic :value="sample.requests" />
+        </Card>
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.cost')
+            }}</span>
+            <Tag :color="cost ? 'green' : 'default'">
+              {{
+                cost
+                  ? $t('page.aurora.panel.overview.realData')
+                  : $t('page.aurora.panel.overview.unavailable')
+              }}
+            </Tag>
+          </div>
+          <Statistic :precision="6" :value="cost?.total_cost ?? 0" prefix="$" />
+        </Card>
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.tokens')
+            }}</span>
+            <Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag>
+          </div>
+          <Statistic :value="totalTokens" />
+        </Card>
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.latency')
+            }}</span>
+            <Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag>
+          </div>
+          <Statistic :value="sample.averageLatencyMs" suffix="ms" />
+        </Card>
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.messages')
+            }}</span>
+            <Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag>
+          </div>
+          <Statistic :value="sample.messages" />
+        </Card>
+        <Card size="small">
+          <div class="mb-2 flex items-center justify-between gap-2">
+            <span class="text-muted-foreground text-sm">{{
+              $t('page.aurora.dashboard.cache')
+            }}</span>
+            <Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag>
+          </div>
+          <Statistic :precision="1" :value="sample.cacheHitRate" suffix="%" />
+        </Card>
+      </section>
+
+      <section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <Card :title="$t('page.aurora.panel.overview.activityTrend')">
+          <template #extra
+            ><Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag></template
+          >
+          <OverviewCharts
+            :cost="cost"
+            kind="activity"
+            :sample="sample"
+            :tasks="tasks"
           />
         </Card>
-        <Card>
-          <Statistic
-            :precision="2"
-            :title="$t('page.aurora.dashboard.cost')"
-            :value="snapshot.metrics.cost"
-            prefix="¥"
+        <Card :title="$t('page.aurora.panel.overview.tokenTrend')">
+          <template #extra
+            ><Tag color="orange">{{
+              $t('page.aurora.panel.overview.sampleData')
+            }}</Tag></template
+          >
+          <OverviewCharts
+            :cost="cost"
+            kind="tokens"
+            :sample="sample"
+            :tasks="tasks"
           />
         </Card>
-        <Card>
-          <Statistic
-            :title="$t('page.aurora.dashboard.tokens')"
-            :value="
-              snapshot.metrics.inputTokens + snapshot.metrics.outputTokens
-            "
+        <Card :title="$t('page.aurora.panel.overview.taskDistribution')">
+          <template #extra>
+            <Tag :color="failedSources.includes('tasks') ? 'default' : 'green'">
+              {{
+                failedSources.includes('tasks')
+                  ? $t('page.aurora.panel.overview.unavailable')
+                  : $t('page.aurora.panel.overview.realData')
+              }}
+            </Tag>
+          </template>
+          <OverviewCharts
+            :cost="cost"
+            kind="tasks"
+            :sample="sample"
+            :tasks="tasks"
           />
         </Card>
-        <Card>
-          <Statistic
-            :title="$t('page.aurora.dashboard.latency')"
-            :value="snapshot.metrics.averageLatencyMs"
-            suffix="ms"
-          />
-        </Card>
-        <Card>
-          <Statistic
-            :title="$t('page.aurora.dashboard.messages')"
-            :value="snapshot.metrics.messages"
-          />
-        </Card>
-        <Card>
-          <Statistic
-            :precision="1"
-            :title="$t('page.aurora.dashboard.cache')"
-            :value="snapshot.metrics.cacheHitRate"
-            suffix="%"
+        <Card :title="$t('page.aurora.panel.overview.costDistribution')">
+          <template #extra>
+            <Tag :color="cost ? 'green' : 'default'">
+              {{
+                cost
+                  ? $t('page.aurora.panel.overview.realData')
+                  : $t('page.aurora.panel.overview.unavailable')
+              }}
+            </Tag>
+          </template>
+          <OverviewCharts
+            :cost="cost"
+            kind="cost"
+            :sample="sample"
+            :tasks="tasks"
           />
         </Card>
       </section>
 
-      <section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-5">
-        <Card class="xl:col-span-3" :title="$t('page.aurora.dashboard.trend')">
-          <div
-            class="bar-chart"
-            role="img"
-            :aria-label="$t('page.aurora.dashboard.trend')"
-          >
-            <div
-              v-for="point in snapshot.trend"
-              :key="point.label"
-              class="bar-column"
+      <section class="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <Card
+          class="overflow-hidden xl:col-span-2"
+          :title="$t('page.aurora.panel.overview.recentTasks')"
+        >
+          <div class="overflow-x-auto">
+            <Table
+              :columns="taskColumns"
+              :data-source="recentTasks"
+              :pagination="false"
+              row-key="task_id"
+              :scroll="{ x: 720 }"
+              size="small"
             >
-              <div class="bar-track">
-                <span
-                  :style="{
-                    height: `${Math.max((point.requests / maxRequests) * 100, 4)}%`,
-                  }"
-                ></span>
-              </div>
-              <small>{{ point.label }}</small>
-            </div>
+              <template #bodyCell="{ column, record }">
+                <Tag
+                  v-if="column.key === 'status'"
+                  :color="statusColor(record.status)"
+                >
+                  {{ record.status }}
+                </Tag>
+                <template v-else-if="column.key === 'updated_at'">
+                  {{ formatDate(record.updated_at) }}
+                </template>
+              </template>
+              <template #emptyText
+                ><Empty :description="$t('page.aurora.panel.empty')"
+              /></template>
+            </Table>
           </div>
         </Card>
 
-        <Card
-          class="xl:col-span-2"
-          :title="$t('page.aurora.dashboard.tokenTrend')"
-        >
-          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div class="bg-muted rounded-md p-4">
-              <div
-                class="text-muted-foreground mb-2 flex items-center gap-2 text-sm"
-              >
-                <IconifyIcon icon="lucide:arrow-down-left" />
-                {{ $t('page.aurora.dashboard.input') }}
-              </div>
-              <div class="text-2xl font-semibold">
-                {{ formatCount(snapshot.metrics.inputTokens) }}
-              </div>
+        <Card :title="$t('page.aurora.panel.overview.runtime')">
+          <div class="space-y-4">
+            <div class="flex justify-between gap-4">
+              <span>{{ $t('page.aurora.panel.overview.modelDispatch') }}</span>
+              <Tag :color="status?.model_dispatch_active ? 'green' : 'default'">
+                {{ status?.model_dispatch_active ? 'ON' : 'OFF' }}
+              </Tag>
             </div>
-            <div class="bg-muted rounded-md p-4">
-              <div
-                class="text-muted-foreground mb-2 flex items-center gap-2 text-sm"
-              >
-                <IconifyIcon icon="lucide:arrow-up-right" />
-                {{ $t('page.aurora.dashboard.output') }}
-              </div>
-              <div class="text-2xl font-semibold">
-                {{ formatCount(snapshot.metrics.outputTokens) }}
-              </div>
+            <div class="flex justify-between gap-4">
+              <span>{{
+                $t('page.aurora.panel.overview.modelActivities')
+              }}</span>
+              <strong>{{ status?.active_model_activities ?? '--' }}</strong>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span>{{ $t('page.aurora.panel.overview.inboxEvents') }}</span>
+              <strong>{{ status?.inbox_events ?? '--' }}</strong>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span>{{
+                $t('page.aurora.panel.overview.dueInboxSessions')
+              }}</span>
+              <strong>{{ status?.due_inbox_sessions ?? '--' }}</strong>
+            </div>
+            <div class="flex justify-between gap-4">
+              <span>{{ $t('page.aurora.panel.overview.totalAgents') }}</span>
+              <strong>{{
+                failedSources.includes('agents') ? '--' : agents.length
+              }}</strong>
             </div>
           </div>
-          <Progress
-            class="mt-6"
-            :percent="
-              Math.round(
-                (snapshot.metrics.inputTokens /
-                  Math.max(
-                    snapshot.metrics.inputTokens +
-                      snapshot.metrics.outputTokens,
-                    1,
-                  )) *
-                  100,
-              )
-            "
-            :show-info="false"
-          />
         </Card>
       </section>
     </template>
@@ -368,50 +498,13 @@ onBeforeUnmount(() => controller?.abort());
 </template>
 
 <style scoped>
-.bar-chart {
-  display: flex;
-  gap: 10px;
-  align-items: flex-end;
-  height: 220px;
-}
-
-.bar-column {
-  display: grid;
-  flex: 1;
-  gap: 8px;
-  min-width: 14px;
-  text-align: center;
-}
-
-.bar-track {
-  position: relative;
-  height: 185px;
-  overflow: hidden;
-  background: hsl(var(--muted));
-  border-radius: 4px 4px 0 0;
-}
-
-.bar-track span {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: hsl(var(--primary));
-  border-radius: 4px 4px 0 0;
-}
-
-.bar-column small {
-  font-size: 10px;
-  color: hsl(var(--muted-foreground));
-}
-
 @media (max-width: 720px) {
   .dashboard-actions {
     justify-content: flex-start;
   }
 
   .dashboard-actions > * {
-    width: 100%;
+    max-width: 100%;
   }
 }
 </style>

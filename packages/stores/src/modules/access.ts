@@ -23,6 +23,8 @@ interface AccessState {
    * 登录 accessToken
    */
   accessToken: AccessToken;
+  /** accessToken 的 ISO 过期时间 */
+  accessTokenExpiresAt: null | string;
   /**
    * 是否已经检查过权限
    */
@@ -85,6 +87,9 @@ export const useAccessStore = defineStore('core-access', {
     setAccessToken(token: AccessToken) {
       this.accessToken = token;
     },
+    setAccessTokenExpiresAt(expiresAt: null | string) {
+      this.accessTokenExpiresAt = expiresAt;
+    },
     setIsAccessChecked(isAccessChecked: boolean) {
       this.isAccessChecked = isAccessChecked;
     },
@@ -103,6 +108,7 @@ export const useAccessStore = defineStore('core-access', {
     // 持久化
     pick: [
       'accessToken',
+      'accessTokenExpiresAt',
       'refreshToken',
       'accessCodes',
       'isLockScreen',
@@ -114,6 +120,7 @@ export const useAccessStore = defineStore('core-access', {
     accessMenus: [],
     accessRoutes: [],
     accessToken: null,
+    accessTokenExpiresAt: null,
     isAccessChecked: false,
     isLockScreen: false,
     lockScreenPassword: undefined,

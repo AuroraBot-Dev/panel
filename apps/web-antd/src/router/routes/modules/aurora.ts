@@ -10,13 +10,27 @@ const feature = (name: string, path: string, key: string, icon: string) => ({
   meta: { icon, title: $t(`page.aurora.features.${key}.title`) },
 });
 
+const realFeature = (
+  name: string,
+  path: string,
+  key: string,
+  icon: string,
+  component: () => Promise<unknown>,
+) => ({
+  name,
+  path,
+  component,
+  meta: { icon, title: $t(`page.aurora.features.${key}.title`) },
+});
+
 const routes: RouteRecordRaw[] = [
   {
-    ...feature(
+    ...realFeature(
       'AgentObservation',
       '/observation',
       'observation',
       'lucide:activity',
+      () => import('#/views/aurora/observation.vue'),
     ),
     meta: {
       icon: 'lucide:activity',
@@ -34,17 +48,19 @@ const routes: RouteRecordRaw[] = [
       title: $t('page.aurora.nav.chat'),
     },
     children: [
-      feature(
+      realFeature(
         'ChatConsole',
         'console',
         'chatConsole',
         'lucide:bot-message-square',
+        () => import('#/views/aurora/chat-console.vue'),
       ),
-      feature(
+      realFeature(
         'Conversations',
         'conversations',
         'conversations',
         'lucide:message-circle-more',
+        () => import('#/views/aurora/conversations.vue'),
       ),
     ],
   },
@@ -58,14 +74,27 @@ const routes: RouteRecordRaw[] = [
       title: $t('page.aurora.nav.configuration'),
     },
     children: [
-      feature(
+      realFeature(
         'AgentSettings',
         'agent',
         'agentSettings',
         'lucide:sliders-horizontal',
+        () => import('#/views/aurora/agent-settings.vue'),
       ),
-      feature('Models', 'models', 'models', 'lucide:boxes'),
-      feature('Prompts', 'prompts', 'prompts', 'lucide:notebook-pen'),
+      realFeature(
+        'Models',
+        'models',
+        'models',
+        'lucide:boxes',
+        () => import('#/views/aurora/models.vue'),
+      ),
+      realFeature(
+        'Prompts',
+        'prompts',
+        'prompts',
+        'lucide:notebook-pen',
+        () => import('#/views/aurora/prompts.vue'),
+      ),
     ],
   },
   {
@@ -92,7 +121,13 @@ const routes: RouteRecordRaw[] = [
         'lucide:badge-x',
       ),
       feature('Learning', 'learning', 'learning', 'lucide:brain-circuit'),
-      feature('Memory', 'memory', 'memory', 'lucide:database-zap'),
+      realFeature(
+        'Memory',
+        'memory',
+        'memory',
+        'lucide:database-zap',
+        () => import('#/views/aurora/memory.vue'),
+      ),
     ],
   },
   {
@@ -119,12 +154,19 @@ const routes: RouteRecordRaw[] = [
       title: $t('page.aurora.nav.operations'),
     },
     children: [
-      feature('Logs', 'logs', 'logs', 'lucide:scroll-text'),
-      feature(
+      realFeature(
+        'Logs',
+        'logs',
+        'logs',
+        'lucide:scroll-text',
+        () => import('#/views/aurora/logs.vue'),
+      ),
+      realFeature(
         'Diagnostics',
         'diagnostics',
         'diagnostics',
         'lucide:stethoscope',
+        () => import('#/views/aurora/diagnostics.vue'),
       ),
     ],
   },

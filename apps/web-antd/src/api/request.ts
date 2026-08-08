@@ -1,113 +1,150 @@
-/**
- * 该文件可自行根据业务逻辑进行调整
- */
 import type { RequestClientOptions } from '@vben/request';
 
+import { LOGIN_PATH } from '@vben/constants';
 import { useAppConfig } from '@vben/hooks';
 import { preferences } from '@vben/preferences';
 import {
-  authenticateResponseInterceptor,
   defaultResponseInterceptor,
   errorMessageResponseInterceptor,
   RequestClient,
 } from '@vben/request';
-import { useAccessStore } from '@vben/stores';
+import { resetAllStores, useAccessStore } from '@vben/stores';
 
 import { message } from 'ant-design-vue';
 
-import { useAuthStore } from '#/store';
-
-import { refreshTokenApi } from './core';
+import type { OperationEnvelope } from '#/types/aurora';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
-function createRequestClient(baseURL: string, options?: RequestClientOptions) {
+function formatToken(token: null | string) {
+  return token ? `Bearer ${token}` : null;
+}
+
+export async function clearPanelSession() {
+  resetAllStores();
+  const { router } = await import('#/router');
+  if (router.currentRoute.value.path !== LOGIN_PATH) {
+    await router.replace({
+      path: LOGIN_PATH,
+      query: {
+        redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+      },
+    });
+  }
+}
+
+function errorText(error: any, fallback: string) {
+  return (
+    error?.response?.data?.detail ??
+    error?.response?.data?.message ??
+    error?.detail ??
+    error?.message ??
+    fallback
+  );
+}
+
+function createBodyClient(
+  baseURL: string,
+  options: RequestClientOptions & { authenticated?: boolean } = {},
+) {
+  const { authenticated = false, ...clientOptions } = options;
   const client = new RequestClient({
-    ...options,
+    ...clientOptions,
     baseURL,
+    responseReturn: 'body',
   });
 
-  /**
-   * 重新认证逻辑
-   */
-  async function doReAuthenticate() {
-    console.warn('Access token or refresh token is invalid or expired. ');
-    const accessStore = useAccessStore();
-    const authStore = useAuthStore();
-    accessStore.setAccessToken(null);
-    if (
-      preferences.app.loginExpiredMode === 'modal' &&
-      accessStore.isAccessChecked
-    ) {
-      accessStore.setLoginExpired(true);
-    } else {
-      await authStore.logout();
-    }
+  if (authenticated) {
+    client.addRequestInterceptor({
+      fulfilled: async (config) => {
+        const accessStore = useAccessStore();
+        if (
+          accessStore.accessTokenExpiresAt &&
+          Date.parse(accessStore.accessTokenExpiresAt) <= Date.now()
+        ) {
+          await clearPanelSession();
+          throw new Error('Panel session expired');
+        }
+        config.headers.Authorization = formatToken(accessStore.accessToken);
+        config.headers['Accept-Language'] = preferences.app.locale;
+        return config;
+      },
+    });
+    client.addResponseInterceptor({
+      rejected: async (error) => {
+        if (error?.response?.status === 401) await clearPanelSession();
+        throw error;
+      },
+    });
   }
 
-  /**
-   * 刷新token逻辑
-   */
-  async function doRefreshToken() {
-    const accessStore = useAccessStore();
-    const resp = await refreshTokenApi();
-    const newToken = resp.data;
-    accessStore.setAccessToken(newToken);
-    return newToken;
-  }
-
-  function formatToken(token: null | string) {
-    return token ? `Bearer ${token}` : null;
-  }
-
-  // 请求头处理
-  client.addRequestInterceptor({
-    fulfilled: async (config) => {
-      const accessStore = useAccessStore();
-
-      config.headers.Authorization = formatToken(accessStore.accessToken);
-      config.headers['Accept-Language'] = preferences.app.locale;
-      return config;
-    },
-  });
-
-  // 处理返回的响应数据格式
   client.addResponseInterceptor(
     defaultResponseInterceptor({
       codeField: 'code',
       dataField: 'data',
-      successCode: 0,
+      successCode: 'ok',
     }),
   );
-
-  // token过期的处理
   client.addResponseInterceptor(
-    authenticateResponseInterceptor({
-      client,
-      doReAuthenticate,
-      doRefreshToken,
-      enableRefreshToken: preferences.app.enableRefreshToken,
-      formatToken,
+    errorMessageResponseInterceptor((fallback, error) => {
+      message.error(errorText(error, fallback));
     }),
   );
-
-  // 通用的错误处理,如果没有进入上面的错误处理逻辑，就会进入这里
-  client.addResponseInterceptor(
-    errorMessageResponseInterceptor((msg: string, error) => {
-      // 这里可以根据业务进行定制,你可以拿到 error 内的信息进行定制化处理，根据不同的 code 做不同的提示，而不是直接使用 message.error 提示 msg
-      // 当前mock接口返回的错误字段是 error 或者 message
-      const responseData = error?.response?.data ?? {};
-      const errorMessage = responseData?.error ?? responseData?.message ?? '';
-      // 如果没有错误信息，则会根据状态码进行提示
-      message.error(errorMessage || msg);
-    }),
-  );
-
   return client;
 }
 
-export const requestClient = createRequestClient(apiURL, {
-  responseReturn: 'data',
+export const publicRequestClient = createBodyClient(apiURL);
+export const panelRequestClient = createBodyClient(apiURL, {
+  authenticated: true,
 });
 
-export const baseRequestClient = new RequestClient({ baseURL: apiURL });
+// Compatibility export for modules that use the shared authenticated client.
+export const requestClient = panelRequestClient;
+export const baseRequestClient = publicRequestClient;
+
+export async function operationRequest<T extends object>(
+  method: 'GET' | 'POST',
+  path: string,
+  options?: {
+    data?: unknown;
+    params?: Record<string, unknown>;
+    signal?: AbortSignal;
+  },
+): Promise<T> {
+  const envelope = await panelRequestClient.request<OperationEnvelope<T>>(
+    `/ops${path}`,
+    {
+      data: options?.data,
+      method,
+      params: options?.params,
+      responseReturn: 'body',
+      signal: options?.signal,
+    },
+  );
+  if (!envelope.ok || envelope.code !== 'ok' || envelope.data === null) {
+    throw new Error(envelope.message || envelope.code || 'Operation failed');
+  }
+  return envelope.data;
+}
+
+export function panelApiUrl(path: string) {
+  const base = new URL(apiURL, window.location.origin);
+  const prefix = base.pathname.replace(/\/$/, '');
+  base.pathname = `${prefix}${path.startsWith('/') ? path : `/${path}`}`;
+  return base.toString();
+}
+
+export function panelRootUrl(path: string) {
+  const base = new URL(apiURL, window.location.origin);
+  base.pathname = path;
+  base.search = '';
+  return base.toString();
+}
+
+export function panelWebSocketUrl(token: string) {
+  const explicit = import.meta.env.VITE_GLOB_WS_URL as string | undefined;
+  const base = new URL(explicit || panelApiUrl('/ops/stream'));
+  base.protocol = base.protocol === 'https:' ? 'wss:' : 'ws:';
+  base.searchParams.set('token', token);
+  return base.toString();
+}

@@ -1,51 +1,49 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '@vben/common-ui';
 
-import { computed, markRaw } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
-import { AuthenticationLogin, SliderCaptcha, z } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+import { AuthenticationLogin, z } from '@vben/common-ui';
 
+import { Alert, Tag } from 'ant-design-vue';
+
+import { getApiHealth } from '#/api';
+import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
 
 defineOptions({ name: 'Login' });
 
 const authStore = useAuthStore();
+const healthLoading = ref(true);
+const healthProfile = ref('');
+const backendOnline = ref(false);
 
-const formSchema = computed((): VbenFormSchema[] => {
-  return [
-    {
-      component: 'VbenInput',
-      componentProps: {
-        placeholder: $t('authentication.usernameTip'),
-      },
-      fieldName: 'username',
-      label: $t('authentication.username'),
-      rules: z
-        .string()
-        .min(1, { message: $t('authentication.usernameTip') })
-        .default('admin'),
+const formSchema = computed((): VbenFormSchema[] => [
+  {
+    component: 'VbenInputPassword',
+    componentProps: {
+      autocomplete: 'current-password',
+      placeholder: $t('page.aurora.panel.auth.tokenPlaceholder'),
     },
-    {
-      component: 'VbenInputPassword',
-      componentProps: {
-        placeholder: $t('authentication.password'),
-      },
-      fieldName: 'password',
-      label: $t('authentication.password'),
-      rules: z
-        .string()
-        .min(1, { message: $t('authentication.passwordTip') })
-        .default('123456'),
-    },
-    {
-      component: markRaw(SliderCaptcha),
-      fieldName: 'captcha',
-      rules: z.boolean().refine((value) => value, {
-        message: $t('authentication.verifyRequiredTip'),
-      }),
-    },
-  ];
+    fieldName: 'token_login',
+    label: $t('page.aurora.panel.auth.token'),
+    rules: z
+      .string()
+      .trim()
+      .min(1, { message: $t('page.aurora.panel.auth.tokenRequired') }),
+  },
+]);
+
+onMounted(async () => {
+  try {
+    const health = await getApiHealth();
+    backendOnline.value = health.ok;
+    healthProfile.value = health.profile;
+  } catch {
+    backendOnline.value = false;
+  } finally {
+    healthLoading.value = false;
+  }
 });
 </script>
 
@@ -55,9 +53,32 @@ const formSchema = computed((): VbenFormSchema[] => {
     :loading="authStore.loginLoading"
     :show-code-login="false"
     :show-forget-password="false"
+    :show-remember-me="false"
     :show-qrcode-login="false"
     :show-register="false"
     :show-third-party-login="false"
     @submit="authStore.authLogin"
-  />
+  >
+    <template #subTitle>
+      <div class="space-y-3">
+        <div>{{ $t('page.aurora.panel.auth.help') }}</div>
+        <Alert
+          :message="
+            backendOnline
+              ? $t('page.aurora.panel.auth.online')
+              : $t('page.aurora.panel.auth.offline')
+          "
+          :show-icon="true"
+          :type="backendOnline ? 'success' : 'warning'"
+        >
+          <template v-if="healthLoading" #description>
+            {{ $t('page.aurora.panel.loading') }}
+          </template>
+          <template v-else-if="healthProfile" #description>
+            <Tag>{{ healthProfile }}</Tag>
+          </template>
+        </Alert>
+      </div>
+    </template>
+  </AuthenticationLogin>
 </template>

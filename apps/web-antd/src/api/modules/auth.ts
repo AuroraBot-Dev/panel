@@ -1,6 +1,1 @@
-export {
-  getAccessCodesApi,
-  loginApi,
-  logoutApi,
-  refreshTokenApi,
-} from '../core/auth';
+export { getApiHealth, getRootHealth, loginApi, logoutApi } from '../core/auth';

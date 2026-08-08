@@ -46,6 +46,113 @@
       "loadError": "Dashboard data is temporarily unavailable",
       "retry": "Retry"
     },
+    "panel": {
+      "refresh": "Refresh",
+      "loading": "Connecting to backend…",
+      "empty": "No data",
+      "apply": "Apply",
+      "search": "Search",
+      "detail": "Details",
+      "action": "Action",
+      "status": "Status",
+      "summary": "Summary",
+      "output": "Output",
+      "createdAt": "Created at",
+      "updatedAt": "Updated at",
+      "loadMore": "Load more",
+      "auth": {
+        "token": "Bootstrap token",
+        "tokenPlaceholder": "Token from data/ops/Token.txt",
+        "tokenRequired": "Enter the bootstrap token",
+        "help": "The bootstrap token is only exchanged for a panel session and is not stored.",
+        "online": "AuroraBot backend is online",
+        "offline": "AuroraBot backend is unavailable"
+      },
+      "overview": {
+        "description": "Monitor AuroraBot runtime health, usage trends, and resources in one place.",
+        "systemStatus": "Runtime status",
+        "queueOverview": "Dispatch and queues",
+        "activeTasks": "Active tasks",
+        "activeAgents": "Active agents",
+        "pendingActivities": "Pending activities",
+        "pendingMessages": "Pending messages",
+        "inboxEvents": "Inbox events",
+        "cost": "Model cost",
+        "memoryFacts": "Memory facts",
+        "memoryMessages": "Memory window",
+        "recentTasks": "Recent tasks",
+        "runtime": "Runtime",
+        "modelDispatch": "Model dispatch",
+        "modelActivities": "Active model calls",
+        "pendingModel": "Pending model calls",
+        "pendingTool": "Pending tool calls",
+        "totalAgents": "Recorded agents",
+        "activityTrend": "Activity trend",
+        "tokenTrend": "Token usage trend",
+        "taskDistribution": "Task status distribution",
+        "costDistribution": "Cost by role",
+        "placeholderData": "Placeholder data",
+        "sampleData": "Sample data",
+        "realData": "Live data",
+        "unavailable": "Unavailable",
+        "dispatching": "Dispatching",
+        "dispatchStopped": "Dispatch stopped",
+        "partialLoadError": "Some live data could not be loaded",
+        "totalStorage": "Total resource usage",
+        "range24h": "24 hours",
+        "range7d": "7 days",
+        "range30d": "30 days",
+        "task": "Task",
+        "modelCalls": "Model calls",
+        "noTasks": "No tasks",
+        "noCost": "No cost data",
+        "dueInboxSessions": "Due inbox sessions",
+        "sources": {
+          "status": "Runtime status",
+          "tasks": "Task list",
+          "agents": "Agent list",
+          "cost": "Model cost",
+          "memory": "Memory status"
+        },
+        "storage": {
+          "images": "Images",
+          "emoji": "Emoji assets",
+          "logs": "Logs",
+          "datasets": "Datasets"
+        }
+      },
+      "observation": {
+        "tasks": "Tasks",
+        "agents": "Agents",
+        "events": "Causal events"
+      },
+      "chat": {
+        "polling": "Polling fallback",
+        "placeholder": "Message AuroraBot (Ctrl+Enter to send)",
+        "attachment": "Upload attachment",
+        "uploaded": "Attachment uploaded",
+        "send": "Send"
+      },
+      "conversations": {
+        "description": "Inspect message projections, causal events, and model outputs by session ID."
+      },
+      "logs": {
+        "clear": "Clear terminal",
+        "clearHelp": "The HTTP operation only returns a console control result and does not clear browser data.",
+        "clearResult": "The backend returned the console clear control result",
+        "consoleScope": "These console_only operations affect AuroraBot terminal output."
+      },
+      "diagnostics": {
+        "invalidJson": "Enter valid JSON",
+        "objectRequired": "AMP must be a JSON object",
+        "completed": "Operation completed",
+        "pumpHelp": "Confirm explicit Engine progress, turns:",
+        "shutdownPhrase": "Enter the SHUTDOWN confirmation phrase",
+        "shutdownHelp": "Shutdown stops AuroraBot and disconnects this panel. It cannot be undone from the panel.",
+        "mutationWarning": "This operation injects a real AMP event into the Engine. Review it before submitting.",
+        "unmapped": "The backend catalog contains an operation without a frontend mapping"
+      }
+    },
     "placeholder": {
       "badge": "API pending",
       "description": "The page structure and domain API boundary are ready. Real data and actions will be connected after the OpenAPI file arrives.",
