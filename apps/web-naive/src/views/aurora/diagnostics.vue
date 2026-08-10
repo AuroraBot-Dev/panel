@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type { OperationCatalog, PanelHealth } from '#/types/aurora';
+import type { OperationCatalog, PanelHealth } from '#/api';
 
 import { computed, onMounted, ref } from 'vue';
 

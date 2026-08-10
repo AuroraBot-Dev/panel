@@ -1,44 +1,51 @@
 # AuroraBot Panel
 
-AuroraBot 的 AI Agent 运行与配置面板，基于 Vue 3 + Vite + Naive UI。包含登录/RBAC、运行概览、完整业务导航、领域 API 边界和本地 Mock 服务。
+AuroraBot 的 Web 管理面板，基于 Vue 3、Vite、Naive UI 和 Vben Admin 5.7。面板直接连接 AuroraBot `ops` 后端，用于观察运行态、聊天、查看配置和执行诊断操作。
 
-## 技术栈
+## 环境要求
 
-- Vue 3、TypeScript、Pinia、Vue Router
-- [Naive UI](https://www.naiveui.com/) 组件库
-- [Prettier](https://prettier.io/) 代码格式化
-- Vben Admin 5.7 的 monorepo 工程结构（pnpm workspace + turbo）
+- Node.js 22.18+ 或 24.12+
+- pnpm 11+
+- 已启动的 AuroraBot 后端
 
-## 开发
+## 本地开发
 
-环境要求：Node.js 22.18+、pnpm 11+。
+先在 AuroraBot 仓库启动后端：
+
+```bash
+uv run aurora start
+```
+
+后端默认监听 `http://127.0.0.1:8765`。随后在本仓库运行：
 
 ```bash
 pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-开发环境默认启用 Nitro Mock API。登录账号为 `admin`，密码为 `123456`。
+开发服务器通过 Vite 将 `/api`、`/healthz` 和 WebSocket 转发到 AuroraBot。登录时使用后端生成在 `data/ops/Token.txt` 中的 bootstrap token。
 
-常用检查：
+跨域部署可通过 `VITE_GLOB_API_URL` 设置 API 地址，并通过 `VITE_GLOB_WS_URL` 显式设置 WebSocket 地址。
 
-```bash
-pnpm typecheck
-pnpm build
-pnpm format
-```
+## API 契约
 
-## 接入真实 API
+- 认证：`/api/auth/login`、`/api/auth/logout`
+- 健康检查：`/api/health`、`/healthz`
+- 操作目录：`/api/ops` 与 26 个注册操作
+- 附件：`/api/ops/attachments`
+- 输出流：`/api/ops/stream`
 
-1. 将后端 OpenAPI 文档保存为 `openapi/openapi.yaml`。
-2. 运行 `pnpm api:generate` 更新传输层类型。
-3. 在 `apps/web-naive/src/api/modules` 中实现或校准领域适配器。
-4. 将 `VITE_API_MODE` 设置为 `remote`，并配置 `VITE_GLOB_API_URL`。
-
-页面只能通过 `src/api/modules` 访问后端，不应直接拼接接口地址。
+后端使用动态操作路由，前端在 `apps/web-naive/src/api/modules` 和 `apps/web-naive/src/api/types` 中按领域维护请求函数与传输 DTO。页面只能通过 `#/api` 访问后端。
 
 ## 当前边界
 
-- 已实现：Dashboard Mock 指标、Agent 列表与 Mock 重启、业务路由骨架。
-- 待 OpenAPI：真实聊天流、配置写入、资源管理、学习/记忆、插件和日志接口。
-- 本阶段不包含数据库、Agent 后端或生产部署。
+引擎观察、聊天、会话、模型、配置、提示词、记忆、日志和诊断页面使用真实后端数据。Emoji、表情、屏蔽词、学习、插件和市场入口作为明确的功能占位保留，不提供模拟数据或虚构 API。
+
+## 检查
+
+```bash
+pnpm typecheck
+pnpm exec vitest run apps/web-naive/src/api/operation-coverage.test.ts --dom
+pnpm lint
+pnpm build
+```

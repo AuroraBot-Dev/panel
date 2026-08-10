@@ -18,6 +18,7 @@ interface WebNaivePreferencesExtension {
 export const overridesPreferences = defineOverridesPreferences({
   // overrides
   app: {
+    accessMode: 'frontend',
     defaultAvatar:
       'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=AuroraBot',
     defaultHomePath: '/overview',

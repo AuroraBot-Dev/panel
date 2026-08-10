@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { AgentProfile, JsonRecord, PromptRecord } from '#/types/aurora';
+import type { AgentProfile, JsonRecord, PromptRecord } from '#/api';
 
 import { computed, onMounted, ref } from 'vue';
 

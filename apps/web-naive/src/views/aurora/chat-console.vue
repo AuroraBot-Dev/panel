@@ -3,7 +3,7 @@ import type {
   AttachmentRecord,
   OutputStreamItem,
   WebSocketOutputEvent,
-} from '#/types/aurora';
+} from '#/api';
 
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -17,12 +17,12 @@ import {
   downloadAttachment,
   getActivities,
   getMessages,
+  PANEL_OWNER,
   panelWebSocketUrl,
   sendMessage,
   uploadAttachment,
 } from '#/api';
 import { $t } from '#/locales';
-import { PANEL_OWNER } from '#/types/aurora';
 
 interface ChatLine {
   at: string;

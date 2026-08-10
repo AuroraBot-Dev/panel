@@ -7,7 +7,7 @@ import type {
   CausalEvent,
   TaskDetail,
   TaskTransport,
-} from '#/types/aurora';
+} from '#/api';
 
 import { h, onMounted, ref } from 'vue';
 

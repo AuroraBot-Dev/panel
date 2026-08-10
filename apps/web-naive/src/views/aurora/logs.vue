@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type { JsonRecord, OutputStreamItem } from '#/types/aurora';
+import type { JsonRecord, OutputStreamItem } from '#/api';
 
 import { onMounted, ref } from 'vue';
 

@@ -1,11 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type {
-  MemoryHistory,
-  MemorySearchResult,
-  MemoryStatus,
-} from '#/types/aurora';
+import type { MemoryHistory, MemorySearchResult, MemoryStatus } from '#/api';
 
 import { onMounted, ref } from 'vue';
 

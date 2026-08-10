@@ -1,7 +1,6 @@
 {
   "auth": {
-    "login": "Login",
-    "profile": "Profile"
+    "login": "Login"
   },
   "aurora": {
     "auth": {
@@ -20,13 +19,8 @@
     "dashboard": {
       "eyebrow": "AURORABOT CONTROL PLANE",
       "title": "Agent overview",
-      "subtitle": "Monitor runtime health, usage, cost, and storage. Data currently comes from the development Mock API.",
-      "mock": "Mock data",
+      "subtitle": "Monitor live runtime health and cost reported by AuroraBot.",
       "agent": "Agent",
-      "restart": "Restart agent",
-      "restartTitle": "Restart this agent?",
-      "restartDescription": "Phase one only sends a Mock request and never touches a real agent.",
-      "restartAccepted": "Mock restart request accepted",
       "online": "Online",
       "offline": "Offline",
       "degraded": "Degraded",
@@ -69,7 +63,7 @@
         "offline": "AuroraBot backend is unavailable"
       },
       "overview": {
-        "description": "Monitor AuroraBot runtime health, usage trends, and resources in one place.",
+        "description": "Monitor AuroraBot runtime health, tasks, cost, and memory status.",
         "systemStatus": "Runtime status",
         "queueOverview": "Dispatch and queues",
         "activeTasks": "Active tasks",

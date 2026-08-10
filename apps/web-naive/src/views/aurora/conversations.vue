@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type { SessionExport } from '#/types/aurora';
+import type { SessionExport } from '#/api';
 
 import { onMounted, ref } from 'vue';
 
@@ -17,9 +17,8 @@ import {
   NTabs,
 } from 'naive-ui';
 
-import { exportSession, getMessages } from '#/api';
+import { exportSession, getMessages, PANEL_OWNER } from '#/api';
 import { $t } from '#/locales';
-import { PANEL_OWNER } from '#/types/aurora';
 
 interface EventRow {
   created_at: string;

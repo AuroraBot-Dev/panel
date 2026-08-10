@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type { AiCost, JsonRecord } from '#/types/aurora';
+import type { AiCost, JsonRecord } from '#/api';
 
 import { onMounted, ref } from 'vue';
 

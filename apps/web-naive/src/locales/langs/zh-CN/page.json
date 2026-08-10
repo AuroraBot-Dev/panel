@@ -1,7 +1,6 @@
 {
   "auth": {
-    "login": "登录",
-    "profile": "个人中心"
+    "login": "登录"
   },
   "aurora": {
     "auth": {
@@ -20,13 +19,8 @@
     "dashboard": {
       "eyebrow": "AURORABOT CONTROL PLANE",
       "title": "Agent 运行概览",
-      "subtitle": "集中查看运行状态、用量、成本与存储健康度。当前数据来自开发 Mock 接口。",
-      "mock": "Mock 数据",
+      "subtitle": "集中查看 AuroraBot 后端提供的实时运行状态与费用。",
       "agent": "Agent",
-      "restart": "重启 Agent",
-      "restartTitle": "确认重启此 Agent？",
-      "restartDescription": "第一阶段只会发送 Mock 请求，不会操作真实 Agent。",
-      "restartAccepted": "已接收 Mock 重启请求",
       "online": "在线",
       "offline": "离线",
       "degraded": "状态异常",
@@ -69,7 +63,7 @@
         "offline": "无法连接 AuroraBot 后端"
       },
       "overview": {
-        "description": "集中查看 AuroraBot 的实时运行状态、使用趋势与资源概览。",
+        "description": "集中查看 AuroraBot 的实时运行状态、任务、费用与记忆概览。",
         "systemStatus": "运行状态",
         "queueOverview": "调度与队列",
         "activeTasks": "活动 Task",

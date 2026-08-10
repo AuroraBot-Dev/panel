@@ -1,4 +1,4 @@
-export * from './core';
-export * from './coverage';
+export { operationRequest, panelWebSocketUrl } from './client';
 export * from './modules';
-export { panelWebSocketUrl } from './request';
+export * from './operation-coverage';
+export * from './types';

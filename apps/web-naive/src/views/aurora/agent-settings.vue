@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { DataTableColumns } from 'naive-ui';
 
-import type { AgentProfile, ConfigSnapshot } from '#/types/aurora';
+import type { AgentProfile, ConfigSnapshot } from '#/api';
 
 import { computed, h, onMounted, ref } from 'vue';
 
