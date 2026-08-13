@@ -1,4 +1,4 @@
-import type { BasicUserInfo } from '@vben-core/typings';
+import type { BasicUserInfo } from '@vben/types';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
 

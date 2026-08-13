@@ -27,6 +27,17 @@ pnpm dev
 
 跨域部署可通过 `VITE_GLOB_API_URL` 设置 API 地址，并通过 `VITE_GLOB_WS_URL` 显式设置 WebSocket 地址。
 
+## 项目结构
+
+```text
+apps/web            唯一应用（Vue 3 + Naive UI）
+internal/           构建与开发期工具：vite-config、node-utils、tsconfig、tailwind-config、lint 配置
+packages/@core/     UI 基元层：shared、icons、composables、preferences 与各 ui-kit 组件包
+packages/effects/   应用增强层：layouts、common-ui、plugins、request、access、hooks 等
+packages/           应用共享层：types、utils、stores、locales、styles、constants、icons 等
+scripts/            vsh（内部 CLI）与 deploy（Docker 构建）
+```
+
 ## API 契约
 
 - 认证：`/api/auth/login`、`/api/auth/logout`
@@ -35,7 +46,7 @@ pnpm dev
 - 附件：`/api/ops/attachments`
 - 输出流：`/api/ops/stream`
 
-后端使用动态操作路由，前端在 `apps/web-naive/src/api/modules` 和 `apps/web-naive/src/api/types` 中按领域维护请求函数与传输 DTO。页面只能通过 `#/api` 访问后端。
+后端使用动态操作路由，前端在 `apps/web/src/api/modules` 和 `apps/web/src/api/types` 中按领域维护请求函数与传输 DTO。页面只能通过 `#/api` 访问后端。
 
 ## 当前边界
 
@@ -45,7 +56,7 @@ pnpm dev
 
 ```bash
 pnpm typecheck
-pnpm exec vitest run apps/web-naive/src/api/operation-coverage.test.ts --dom
+pnpm exec vitest run apps/web/src/api/operation-coverage.test.ts --dom
 pnpm lint
 pnpm build
 ```

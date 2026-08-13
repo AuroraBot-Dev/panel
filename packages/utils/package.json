@@ -1,11 +1,11 @@
 {
   "name": "@vben/utils",
   "version": "5.7.0",
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "homepage": "https://github.com/AuroraBot-Dev/panel",
+  "bugs": "https://github.com/AuroraBot-Dev/panel/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "url": "git+https://github.com/AuroraBot-Dev/panel.git",
     "directory": "packages/utils"
   },
   "license": "MIT",
@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@vben-core/shared": "workspace:*",
-    "@vben-core/typings": "workspace:*",
+    "@vben/types": "workspace:*",
     "vue-router": "catalog:"
   }
 }

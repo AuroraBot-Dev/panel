@@ -22,8 +22,8 @@ const DEFAULT_CONFIG = {
     'scripts',
     'internal',
     'packages/effects/request/src/',
-    'packages/@core/ui-kit/menu-ui/src/',
-    'packages/@core/ui-kit/popup-ui/src/',
+    'packages/@core/menu-ui/src/',
+    'packages/@core/popup-ui/src/',
   ],
   threshold: 0, // 循环依赖的阈值
 } as const;

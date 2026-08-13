@@ -2,11 +2,11 @@
   "name": "@vben/vite-config",
   "version": "5.7.0",
   "private": true,
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "homepage": "https://github.com/AuroraBot-Dev/panel",
+  "bugs": "https://github.com/AuroraBot-Dev/panel/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "url": "git+https://github.com/AuroraBot-Dev/panel.git",
     "directory": "internal/vite-config"
   },
   "license": "MIT",
@@ -36,7 +36,6 @@
     "get-port": "catalog:",
     "html-minifier-terser": "catalog:",
     "nitropack": "catalog:",
-    "resolve.exports": "catalog:",
     "vite-plugin-pwa": "catalog:",
     "vite-plugin-vue-devtools": "catalog:"
   },
@@ -46,7 +45,6 @@
     "@types/html-minifier-terser": "catalog:",
     "@vitejs/plugin-vue": "catalog:",
     "@vitejs/plugin-vue-jsx": "catalog:",
-    "dayjs": "catalog:",
     "dotenv": "catalog:",
     "rollup-plugin-visualizer": "catalog:",
     "sass": "catalog:",

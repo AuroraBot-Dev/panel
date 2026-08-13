@@ -16,7 +16,6 @@ const DEFAULT_CONFIG = {
   ignoreBinaries: [] as string[],
   ignoreDependencies: [
     '@iconify/json',
-    '@vben-core/design',
     '@vben/commitlint-config',
     '@vben/eslint-config',
     '@vben/stylelint-config',
@@ -27,7 +26,13 @@ const DEFAULT_CONFIG = {
     'rimraf',
     'tailwindcss',
   ],
-  ignoreWorkspaces: ['internal/lint-configs/*', 'scripts/*'],
+  ignoreWorkspaces: [
+    'internal/commitlint-config',
+    'internal/eslint-config',
+    'internal/oxlint-config',
+    'internal/stylelint-config',
+    'scripts/*',
+  ],
 };
 
 interface KnipDependency {

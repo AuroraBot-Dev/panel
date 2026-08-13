@@ -1,10 +1,6 @@
 import type { Router, RouteRecordRaw } from 'vue-router';
 
-import type {
-  ExRouteRecordRaw,
-  MenuRecordRaw,
-  RouteMeta,
-} from '@vben-core/typings';
+import type { ExRouteRecordRaw, MenuRecordRaw, RouteMeta } from '@vben/types';
 
 import { filterTree, mapTree, sortTree } from '@vben-core/shared/utils';
 

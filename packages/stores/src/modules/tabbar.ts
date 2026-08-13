@@ -7,7 +7,7 @@ import type {
   RouteRecordNormalized,
 } from 'vue-router';
 
-import type { TabDefinition } from '@vben-core/typings';
+import type { TabDefinition } from '@vben/types';
 
 import { markRaw, nextTick, toRaw } from 'vue';
 

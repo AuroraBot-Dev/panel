@@ -3,11 +3,7 @@ import type { AboutProps, DescriptionItem } from './about';
 
 import { h } from 'vue';
 
-import {
-  VBEN_DOC_URL,
-  VBEN_GITHUB_URL,
-  VBEN_PREVIEW_URL,
-} from '@vben/constants';
+import { VBEN_GITHUB_URL } from '@vben/constants';
 
 import { VbenRenderContent } from '@vben-core/shadcn-ui';
 
@@ -78,14 +74,6 @@ const vbenDescriptionItems: DescriptionItem[] = [
   {
     content: renderLink(homepage, '点击查看'),
     title: '主页',
-  },
-  {
-    content: renderLink(VBEN_DOC_URL, '点击查看'),
-    title: '文档地址',
-  },
-  {
-    content: renderLink(VBEN_PREVIEW_URL, '点击查看'),
-    title: '预览地址',
   },
   {
     content: renderLink(VBEN_GITHUB_URL, '点击查看'),

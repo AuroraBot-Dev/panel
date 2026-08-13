@@ -1,31 +1,20 @@
 {
   "name": "@vben/styles",
   "version": "5.7.0",
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "homepage": "https://github.com/AuroraBot-Dev/panel",
+  "bugs": "https://github.com/AuroraBot-Dev/panel/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "url": "git+https://github.com/AuroraBot-Dev/panel.git",
     "directory": "packages/styles"
   },
   "license": "MIT",
+  "author": "AuroraBot Dev",
   "type": "module",
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    },
-    "./antd": {
-      "types": "./src/style-exports.d.ts",
-      "default": "./src/antd/index.css"
-    },
-    "./antdv-next": {
-      "types": "./src/style-exports.d.ts",
-      "default": "./src/antdv-next/index.css"
-    },
-    "./ele": {
-      "types": "./src/style-exports.d.ts",
-      "default": "./src/ele/index.css"
     },
     "./naive": {
       "types": "./src/style-exports.d.ts",
@@ -35,8 +24,5 @@
       "types": "./src/style-exports.d.ts",
       "default": "./src/global/index.scss"
     }
-  },
-  "dependencies": {
-    "@vben-core/design": "workspace:*"
   }
 }

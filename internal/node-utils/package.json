@@ -2,11 +2,11 @@
   "name": "@vben/node-utils",
   "version": "5.7.0",
   "private": true,
-  "homepage": "https://github.com/vbenjs/vue-vben-admin",
-  "bugs": "https://github.com/vbenjs/vue-vben-admin/issues",
+  "homepage": "https://github.com/AuroraBot-Dev/panel",
+  "bugs": "https://github.com/AuroraBot-Dev/panel/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vbenjs/vue-vben-admin.git",
+    "url": "git+https://github.com/AuroraBot-Dev/panel.git",
     "directory": "internal/node-utils"
   },
   "license": "MIT",
@@ -34,7 +34,6 @@
     "consola": "catalog:",
     "dayjs": "catalog:",
     "execa": "catalog:",
-    "find-up": "catalog:",
     "ora": "catalog:",
     "pkg-types": "catalog:",
     "rimraf": "catalog:"
