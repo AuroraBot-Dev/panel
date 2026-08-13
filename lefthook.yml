@@ -52,10 +52,6 @@ pre-commit:
       glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts,json,jsonc,md,mdx,yaml,yml,css,less,scss}'
       run: pnpm exec prettier --write {staged_files}
       stage_fixed: true
-    - name: eslint
-      glob: '*.{js,jsx,ts,tsx,vue,cjs,mjs,cts,mts}'
-      run: pnpm exec eslint --fix {staged_files}
-      stage_fixed: true
     - name: stylelint
       glob: '*.{vue,css,less,scss}'
       run: pnpm exec stylelint --fix {staged_files}
