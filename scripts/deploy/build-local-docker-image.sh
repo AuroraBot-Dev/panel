@@ -36,7 +36,10 @@ function log_message() {
     else
         echo "docker image with tag '${IMAGE_NAME}' built sussessfully. Use below sample command to run the container"
         echo ""
-        echo "docker run -d -p 8010:8080 --name ${IMAGE_NAME} ${IMAGE_NAME}"
+        echo "# 必须使用 host 网络：nginx 需要访问主机 loopback 上的后端（127.0.0.1:8765）"
+        echo "docker run -d --network host --name ${IMAGE_NAME} ${IMAGE_NAME}"
+        echo "# 访问 http://127.0.0.1:8080"
+        echo "# 记得把 http://127.0.0.1:8080 加入后端 config/runtime.toml 的 runtime.panel.allowed_origins"
     fi
 }
 

@@ -52,6 +52,29 @@ scripts/            vsh（内部 CLI）与 deploy（Docker 构建）
 
 引擎观察、聊天、会话、模型、配置、提示词、记忆、日志和诊断页面使用真实后端数据。Emoji、表情、屏蔽词、学习、插件和市场入口作为明确的功能占位保留，不提供模拟数据或虚构 API。
 
+## 发布与部署
+
+面板是独立于主仓发布的纯静态 SPA，`apps/web/dist` 即全部产物；API 与 WebSocket 地址是运行时配置（构建产物中的 `_app-config-*.js`），部署时修改即可，无需重新构建。
+
+### CI 与发布
+
+- `.github/workflows/ci.yml`：push / PR 时执行 lint、typecheck、单测与构建校验。
+- `.github/workflows/release.yml`：推送 `v*` tag 时复用 CI 校验并构建，把 `apps/web/dist` 打包为 `aurorabot-panel-<tag>.zip` 附到 GitHub Release。
+
+```bash
+git tag v5.7.0
+git push origin v5.7.0
+```
+
+### 部署
+
+后端（`aurora` 进程）只监听 loopback 的 `127.0.0.1:8765`，面板需与其同机部署。两种方式：
+
+1. **nginx 反代**：使用 `scripts/deploy/nginx.conf`（托管静态文件 + 反代 `/api`、`/healthz` 和 WebSocket），并把访问来源（如 `http://127.0.0.1:8080`）加入后端 `config/runtime.toml` 的 `runtime.panel.allowed_origins`。
+2. **容器**：`scripts/deploy/build-local-docker-image.sh` 构建镜像后需用 `--network host` 运行（nginx 需访问主机 loopback 后端）。
+
+纯本地使用也可以直接 `pnpm dev`（Vite 代理）或 `pnpm build && pnpm preview`。远程访问请按主仓文档建立可信隧道，保持后端只监听本机。
+
 ## 检查
 
 ```bash

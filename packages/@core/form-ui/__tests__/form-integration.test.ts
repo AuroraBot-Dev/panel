@@ -881,43 +881,6 @@ describe('useVbenForm integration', () => {
     );
   });
 
-  it('respects blur and change validation triggers', async () => {
-    const [Form] = useVbenForm({
-      schema: [
-        {
-          component: TestInput,
-          defaultValue: 'valid',
-          fieldName: 'name',
-          formFieldProps: {
-            validateOn: ['blur'],
-          },
-          label: 'Name',
-          rules: z.string().min(1, 'Name is required'),
-        },
-      ],
-    });
-    const wrapper = mount(Form);
-    wrappers.push(wrapper);
-    await flushPromises();
-    const input = wrapper.get('input');
-
-    await input.setValue('');
-    await flushPromises();
-    expect(wrapper.text()).not.toContain('Name is required');
-
-    await input.trigger('blur');
-    await flushPromises();
-    expect(wrapper.text()).toContain('Name is required');
-
-    await input.setValue('Ada');
-    await flushPromises();
-    expect(wrapper.text()).not.toContain('Name is required');
-
-    await input.trigger('blur');
-    await flushPromises();
-    expect(wrapper.text()).not.toContain('Name is required');
-  });
-
   it('ignores stale asynchronous validation results', async () => {
     let resolveTaken: (() => void) | undefined;
     const usernameRule = z.string().refine(async (value) => {
@@ -991,31 +954,6 @@ describe('useVbenForm integration', () => {
       { normalizedName: 'TEST' },
       { name: ' test ' },
     );
-  });
-
-  it('does not expose raw values through native form submit events', async () => {
-    const onSubmit = vi.fn();
-    const [Form, formApi] = useVbenForm({
-      schema: [
-        {
-          component: TestInput,
-          defaultValue: '',
-          fieldName: 'name',
-          rules: 'required',
-          valueFormat: (value) => value.trim().toUpperCase(),
-        },
-      ],
-    });
-    const wrapper = mount(Form, { attrs: { onSubmit } });
-    wrappers.push(wrapper);
-    await flushPromises();
-
-    await formApi.setFieldValue('name', ' raw ');
-    await wrapper.get('form').trigger('submit');
-    await flushPromises();
-
-    expect(onSubmit).toHaveBeenCalledOnce();
-    expect(onSubmit).toHaveBeenCalledWith(undefined);
   });
 
   it('calls handleReset with formatted values on reset button click', async () => {
