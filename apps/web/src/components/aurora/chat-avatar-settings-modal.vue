@@ -57,8 +57,8 @@ function readAsDataURL(file: File): Promise<string> {
 }
 
 async function openCrop(target: 'bot' | 'user', file: File) {
-  cropTarget.value = target;
   cropImage.value = await readAsDataURL(file);
+  cropTarget.value = target;
 }
 
 async function handleBotUpload(event: Event) {
@@ -111,8 +111,10 @@ function triggerUserUpload() {
 <template>
   <NModal
     :show="show"
+    closable
     preset="card"
     style="width: 640px"
+    :mask-closable="true"
     :title="
       showCrop
         ? cropTarget === 'bot'
@@ -220,19 +222,21 @@ function triggerUserUpload() {
       </div>
     </template>
     <template v-else>
-      <VueCropper
-        ref="cropperRef"
-        :img="cropImage"
-        :output-size="256"
-        output-type="png"
-        :auto-crop="true"
-        :fixed="true"
-        :fixed-number="[1, 1]"
-        :fixed-box="false"
-        :full="false"
-        :center="true"
-        :info="true"
-      />
+      <div :key="cropTarget ?? 'none'" class="cropper-wrap">
+        <VueCropper
+          ref="cropperRef"
+          :img="cropImage"
+          :output-size="256"
+          output-type="png"
+          :auto-crop="true"
+          :fixed="true"
+          :fixed-number="[1, 1]"
+          :fixed-box="false"
+          :full="false"
+          :center="true"
+          :info="true"
+        />
+      </div>
       <div class="mt-4 flex justify-end gap-2">
         <NButton @click="cancelCrop">取消</NButton>
         <NButton type="primary" @click="confirmCrop">确定</NButton>
@@ -240,3 +244,9 @@ function triggerUserUpload() {
     </template>
   </NModal>
 </template>
+
+<style scoped>
+.cropper-wrap {
+  height: 360px;
+}
+</style>
