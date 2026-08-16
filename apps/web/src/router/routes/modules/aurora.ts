@@ -140,7 +140,20 @@ const routes: RouteRecordRaw[] = [
       title: $t('page.aurora.nav.extensions'),
     },
     children: [
-      feature('Plugins', 'plugins', 'plugins', 'lucide:plug-zap'),
+      realFeature(
+        'Plugins',
+        'plugins',
+        'plugins',
+        'lucide:plug-zap',
+        () => import('#/views/aurora/plugins.vue'),
+      ),
+      realFeature(
+        'Apps',
+        'apps',
+        'apps',
+        'lucide:boxes',
+        () => import('#/views/aurora/apps.vue'),
+      ),
       feature('Marketplace', 'marketplace', 'marketplace', 'lucide:store'),
     ],
   },

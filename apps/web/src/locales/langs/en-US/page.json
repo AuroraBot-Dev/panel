@@ -49,6 +49,8 @@
       "detail": "Details",
       "action": "Action",
       "status": "Status",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
       "summary": "Summary",
       "output": "Output",
       "createdAt": "Created at",
@@ -129,6 +131,16 @@
       },
       "conversations": {
         "description": "Inspect message projections, causal events, and model outputs by session ID."
+      },
+      "extensions": {
+        "toggleHelp": "This writes config/extensions.toml and takes effect after restarting AuroraBot.",
+        "toggleDone": "Extension state updated; restart required.",
+        "restartHint": "Extensions are assembled at process startup; a restart is required to apply changes."
+      },
+      "apps": {
+        "toggleHelp": "This writes config/apps.toml and takes effect after restarting AuroraBot.",
+        "toggleDone": "App state updated; restart required.",
+        "restartHint": "MCP apps are connected at process startup; a restart is required to apply changes."
       },
       "logs": {
         "clear": "Clear terminal",
@@ -213,8 +225,13 @@
       },
       "plugins": {
         "title": "Plugin management",
-        "description": "View installed plugins and their activation state.",
+        "description": "View built-in extension declarations and toggle activation.",
         "api": "plugins"
+      },
+      "apps": {
+        "title": "Application management",
+        "description": "View MCP app routes and toggle activation.",
+        "api": "apps"
       },
       "marketplace": {
         "title": "Plugin marketplace",

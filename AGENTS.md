@@ -19,12 +19,12 @@
 
 - 后端是动态 `/api/ops/{path}` catch-all 路由，OpenAPI 无法表达具体 DTO → 前端不做生成类型，`apps/web/src/api/types/` 按后端契约手工同步。
 - 业务 URL 只能出现在 `apps/web/src/api/modules/`；`client.ts` 负责基址、Bearer 会话与 Operation envelope。
-- `operation-coverage.ts` 维护 26 个后端操作与页面路由的映射，`operation-coverage.test.ts` 断言恰好 26 个。后端操作增删时必须同步 `modules/`、`types/`、coverage 映射与测试。
+- `operation-coverage.ts` 维护 30 个后端操作与页面路由的映射，`operation-coverage.test.ts` 断言恰好 30 个。后端操作增删时必须同步 `modules/`、`types/`、coverage 映射与测试。
 
 ## 页面边界
 
-- 引擎观察、聊天、会话、模型、配置、提示词、记忆、日志、诊断页面使用真实后端数据。
-- Emoji、表情、屏蔽词、学习、插件、市场是 `apps/web/src/views/aurora/feature-placeholder.vue` 的明确占位，禁止提供 mock 数据或虚构 API。
+- 引擎观察、聊天、会话、模型、配置、提示词、记忆、日志、诊断、插件、应用页面使用真实后端数据。
+- Emoji、表情、屏蔽词、学习、插件市场是 `apps/web/src/views/aurora/feature-placeholder.vue` 的明确占位，禁止提供 mock 数据或虚构 API。
 
 ## 部署
 

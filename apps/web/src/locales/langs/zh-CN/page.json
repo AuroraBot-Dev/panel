@@ -49,6 +49,8 @@
       "detail": "详情",
       "action": "操作",
       "status": "状态",
+      "enabled": "已启用",
+      "disabled": "已禁用",
       "summary": "摘要",
       "output": "输出",
       "createdAt": "创建时间",
@@ -129,6 +131,16 @@
       },
       "conversations": {
         "description": "按 Session ID 查看消息投影、因果事件与模型输出。"
+      },
+      "extensions": {
+        "toggleHelp": "该操作会写入 config/extensions.toml，重启 AuroraBot 后生效。",
+        "toggleDone": "扩展启用状态已更新，重启后生效。",
+        "restartHint": "扩展在进程启动时装配；切换后需要重启 AuroraBot 才会生效。"
+      },
+      "apps": {
+        "toggleHelp": "该操作会写入 config/apps.toml，重启 AuroraBot 后生效。",
+        "toggleDone": "应用启用状态已更新，重启后生效。",
+        "restartHint": "MCP 应用在进程启动时连接；切换后需要重启 AuroraBot 才会生效。"
       },
       "logs": {
         "clear": "清空终端",
@@ -213,8 +225,13 @@
       },
       "plugins": {
         "title": "插件管理",
-        "description": "查看已安装插件及其启用状态。",
+        "description": "查看内建扩展声明并切换启用状态。",
         "api": "plugins"
+      },
+      "apps": {
+        "title": "应用管理",
+        "description": "查看 MCP 应用路由并切换启用状态。",
+        "api": "apps"
       },
       "marketplace": {
         "title": "插件市场",

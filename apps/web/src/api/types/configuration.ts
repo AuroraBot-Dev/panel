@@ -1,4 +1,6 @@
+import type { AppInfo } from './apps';
 import type { JsonRecord } from './common';
+import type { ExtensionInfo } from './extensions';
 
 export interface AgentProfile {
   can_delegate: boolean;
@@ -10,8 +12,10 @@ export interface AgentProfile {
 
 export interface ConfigSnapshot {
   agents: AgentProfile[];
+  apps: AppInfo[];
   console: JsonRecord;
   engine: JsonRecord;
+  extensions: ExtensionInfo[];
   models: JsonRecord;
   panel: JsonRecord;
   profile: string;
