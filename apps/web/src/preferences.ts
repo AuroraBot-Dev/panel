@@ -43,6 +43,7 @@ export const overridesPreferences = defineOverridesPreferences({
   },
   widget: {
     logoutButtonPosition: 'none',
+    lockScreenButtonPosition: 'none',
     notificationButtonPosition: 'none',
     order: [
       'globalSearch',
