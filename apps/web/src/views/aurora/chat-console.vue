@@ -272,25 +272,25 @@ onBeforeUnmount(() => {
         />
         <div class="chat-input-toolbar">
           <NButton
-            round
+            circle
             size="medium"
             :disabled="uploading"
             type="default"
             @click="triggerFileInput"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:plus" class="size-5 m-0.5" />
+              <IconifyIcon icon="lucide:plus" class="size-5" />
             </template>
           </NButton>
           <NButton
-            round
+            circle
             size="medium"
             type="primary"
             :loading="sending"
             @click="submit"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:arrow-up" class="size-5 m-0.5" />
+              <IconifyIcon icon="lucide:arrow-up" class="size-5" />
             </template>
           </NButton>
         </div>
@@ -377,11 +377,11 @@ onBeforeUnmount(() => {
 .chat-input-box {
   width: 100%;
   max-width: 760px;
-  padding: 8px 8px 4px;
+  padding: 8px;
   margin: 0 auto;
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  border-radius: 16px;
+  border-radius: 24px;
   transition: border-color 0.2s;
 }
 
