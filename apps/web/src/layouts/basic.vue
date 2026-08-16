@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 
-import { AuthenticationLoginExpiredModal, VbenAvatar } from '@vben/common-ui';
+import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
 import { IconifyIcon } from '@vben/icons';
 import { BasicLayout, LockScreen, UserDropdown } from '@vben/layouts';
@@ -81,6 +81,7 @@ watch(
     <template #user-dropdown>
       <UserDropdown
         :avatar
+        :avatar-icon="chatAvatar.userIcon"
         :menus="userMenus"
         :text="displayName"
         @clear-preferences-and-logout="handleLogout"
@@ -89,7 +90,11 @@ watch(
         <template #label>
           <div class="flex w-full flex-col gap-3">
             <div class="flex items-center gap-3">
-              <VbenAvatar :alt="displayName" :src="avatar" class="size-10" />
+              <div
+                class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"
+              >
+                <IconifyIcon :icon="chatAvatar.userIcon" class="size-5" />
+              </div>
               <div class="min-w-0">
                 <div class="text-sm font-medium text-foreground">
                   {{ displayName }}

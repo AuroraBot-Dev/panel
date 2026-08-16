@@ -9,6 +9,7 @@ import { SUPPORT_LANGUAGES } from '@vben/constants';
 import { useHoverToggle, useRefresh } from '@vben/hooks';
 import {
   createIconifyIcon,
+  IconifyIcon,
   Languages,
   LockKeyhole,
   LogOut,
@@ -56,6 +57,10 @@ interface Props {
    */
   avatar?: string;
   /**
+   * 图标头像（图标名，优先于 avatar 渲染）
+   */
+  avatarIcon?: string;
+  /**
    * @zh_CN 描述
    */
   description?: string;
@@ -88,6 +93,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<Props>(), {
   avatar: '',
+  avatarIcon: '',
   description: '',
   menus: () => [],
   tagText: '',
@@ -364,7 +370,23 @@ if (preferences.shortcutKeys.enable) {
     <DropdownMenuTrigger ref="refTrigger" :disabled="props.trigger === 'hover'">
       <div class="mr-2 ml-1 cursor-pointer rounded-full p-1.5 hover:bg-accent">
         <div class="flex-center hover:text-accent-foreground">
-          <VbenAvatar :alt="text" :src="avatar" class="size-8" dot />
+          <VbenAvatar
+            v-if="!avatarIcon"
+            :alt="text"
+            :src="avatar"
+            class="size-8"
+            dot
+          />
+          <div
+            v-else
+            class="relative flex size-8 items-center justify-center rounded-full bg-muted"
+          >
+            <IconifyIcon :icon="avatarIcon" class="size-4" />
+            <span
+              class="border-background absolute right-0 bottom-0 size-3 rounded-full border-2 bg-green-500"
+            >
+            </span>
+          </div>
         </div>
       </div>
     </DropdownMenuTrigger>
