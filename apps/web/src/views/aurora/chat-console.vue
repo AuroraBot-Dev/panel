@@ -248,73 +248,73 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div v-if="attachments.length" class="mb-3 flex flex-wrap gap-2">
-        <NTag
-          v-for="item in attachments"
-          :key="item.attachment_id"
-          closable
-          @close="
-            attachments = attachments.filter(
-              (value) => value.attachment_id !== item.attachment_id,
-            )
-          "
-        >
-          <button type="button" @click="download(item)">
-            {{ item.name }} · {{ item.size }} B
-          </button>
-        </NTag>
-      </div>
-
-      <div class="chat-input-box">
-        <NInput
-          v-model:value="text"
-          type="textarea"
-          :autosize="{ minRows: 3, maxRows: 8 }"
-          :bordered="false"
-          :placeholder="$t('page.aurora.panel.chat.placeholder')"
-          @keydown.ctrl.enter.prevent="submit"
-        />
-        <div class="chat-input-toolbar">
-          <NButton
-            circle
-            size="medium"
-            :disabled="uploading"
-            type="default"
-            @click="triggerFileInput"
+      <div class="chat-input-float">
+        <div v-if="attachments.length" class="mb-3 flex flex-wrap gap-2">
+          <NTag
+            v-for="item in attachments"
+            :key="item.attachment_id"
+            closable
+            @close="
+              attachments = attachments.filter(
+                (value) => value.attachment_id !== item.attachment_id,
+              )
+            "
           >
-            <template #icon>
-              <IconifyIcon icon="lucide:plus" class="size-5" />
-            </template>
-          </NButton>
-          <NButton
-            circle
-            size="medium"
-            type="primary"
-            :loading="sending"
-            @click="submit"
-          >
-            <template #icon>
-              <IconifyIcon icon="lucide:arrow-up" class="size-5" />
-            </template>
-          </NButton>
+            <button type="button" @click="download(item)">
+              {{ item.name }} · {{ item.size }} B
+            </button>
+          </NTag>
         </div>
-        <input
-          ref="fileInput"
-          class="hidden"
-          type="file"
-          :disabled="uploading"
-          @change="selectFile"
-        />
+        <div class="chat-input-box">
+          <NInput
+            v-model:value="text"
+            type="textarea"
+            :autosize="{ minRows: 3, maxRows: 8 }"
+            :bordered="false"
+            :placeholder="$t('page.aurora.panel.chat.placeholder')"
+            @keydown.ctrl.enter.prevent="submit"
+          />
+          <div class="chat-input-toolbar">
+            <NButton
+              circle
+              size="medium"
+              :disabled="uploading"
+              type="default"
+              @click="triggerFileInput"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:plus" class="size-5" />
+              </template>
+            </NButton>
+            <NButton
+              circle
+              size="medium"
+              type="primary"
+              :loading="sending"
+              @click="submit"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:arrow-up" class="size-5" />
+              </template>
+            </NButton>
+          </div>
+          <input
+            ref="fileInput"
+            class="hidden"
+            type="file"
+            :disabled="uploading"
+            @change="selectFile"
+          />
+        </div>
+        <p class="chat-ai-hint">{{ $t('page.aurora.panel.chat.aiHint') }}</p>
       </div>
-      <p class="chat-ai-hint">{{ $t('page.aurora.panel.chat.aiHint') }}</p>
     </div>
   </Page>
 </template>
 
 <style scoped>
 .chat-card {
-  display: flex;
-  flex-direction: column;
+  position: relative;
   max-width: min(90%, 1100px);
   height: calc(100vh - 80px);
   min-height: 420px;
@@ -324,10 +324,8 @@ onBeforeUnmount(() => {
 }
 
 .chat-body {
-  flex: 1;
-  min-height: 0;
-  padding: 24px 8px;
-  margin-bottom: 16px;
+  height: 100%;
+  padding: 24px 8px 180px;
   overflow-y: auto;
 }
 
@@ -373,6 +371,15 @@ onBeforeUnmount(() => {
   margin-bottom: 4px;
   font-size: 11px;
   opacity: 0.65;
+}
+
+.chat-input-float {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  padding: 0 16px 8px;
 }
 
 .chat-input-box {
