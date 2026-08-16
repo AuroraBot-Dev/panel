@@ -279,7 +279,7 @@ onBeforeUnmount(() => {
             @click="triggerFileInput"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:plus" class="size-5" />
+              <IconifyIcon icon="lucide:plus" class="size-5 m-0.5" />
             </template>
           </NButton>
           <NButton
@@ -290,7 +290,7 @@ onBeforeUnmount(() => {
             @click="submit"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:arrow-up" class="size-5" />
+              <IconifyIcon icon="lucide:arrow-up" class="size-5 m-0.5" />
             </template>
           </NButton>
         </div>
@@ -375,6 +375,7 @@ onBeforeUnmount(() => {
 }
 
 .chat-input-box {
+  width: 100%;
   max-width: 760px;
   padding: 8px 8px 4px;
   margin: 0 auto;
