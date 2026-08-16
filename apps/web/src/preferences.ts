@@ -23,6 +23,7 @@ export const overridesPreferences = defineOverridesPreferences({
       'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=AuroraBot',
     defaultHomePath: '/overview',
     enableCheckUpdates: false,
+    layout: 'header-sidebar-nav',
     name: import.meta.env.VITE_APP_TITLE,
   },
   copyright: {
@@ -34,6 +35,37 @@ export const overridesPreferences = defineOverridesPreferences({
   logo: {
     showText: true,
     source: '/logo.svg',
+  },
+  sidebar: {
+    collapsed: true,
+    collapsedButton: false,
+    fixedButton: false,
+  },
+  tabbar: {
+    enable: false,
+  },
+  theme: {
+    mode: 'auto',
+    radius: '0.75',
+  },
+  transition: {
+    name: 'fade',
+  },
+  widget: {
+    logoutButtonPosition: 'none',
+    notificationButtonPosition: 'none',
+    order: [
+      'globalSearch',
+      'preferences',
+      'themeToggle',
+      'languageToggle',
+      'timezone',
+      'fullscreen',
+      'refresh',
+      'lockScreenBtn',
+      'logoutBtn',
+      'notification',
+    ],
   },
 });
 
