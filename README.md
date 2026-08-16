@@ -42,7 +42,7 @@ scripts/            vsh（内部 CLI）与 deploy（Docker 构建）
 
 - 认证：`/api/auth/login`、`/api/auth/logout`
 - 健康检查：`/api/health`、`/healthz`
-- 操作目录：`/api/ops` 与 26 个注册操作
+- 操作目录：`/api/ops` 与 30 个注册操作
 - 附件：`/api/ops/attachments`
 - 输出流：`/api/ops/stream`
 
@@ -50,7 +50,7 @@ scripts/            vsh（内部 CLI）与 deploy（Docker 构建）
 
 ## 当前边界
 
-引擎观察、聊天、会话、模型、配置、提示词、记忆、日志和诊断页面使用真实后端数据。Emoji、表情、屏蔽词、学习、插件和市场入口作为明确的功能占位保留，不提供模拟数据或虚构 API。
+引擎观察、聊天、会话、模型、配置、提示词、记忆、日志、诊断、插件和应用页面使用真实后端数据。Emoji、表情、屏蔽词、学习和插件市场入口作为明确的功能占位保留，不提供模拟数据或虚构 API。
 
 ## 发布与部署
 

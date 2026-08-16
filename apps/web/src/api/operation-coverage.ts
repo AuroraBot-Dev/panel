@@ -163,6 +163,30 @@ export const operationCoverage: OperationCoverage[] = [
     path: '/console/log',
     route: '/operations/logs',
   },
+  {
+    feature: 'Extension list',
+    method: 'GET',
+    path: '/extensions',
+    route: '/extensions/plugins',
+  },
+  {
+    feature: 'Extension toggle',
+    method: 'POST',
+    path: '/extensions/{extension_id}/enabled',
+    route: '/extensions/plugins',
+  },
+  {
+    feature: 'App list',
+    method: 'GET',
+    path: '/apps',
+    route: '/extensions/apps',
+  },
+  {
+    feature: 'App toggle',
+    method: 'POST',
+    path: '/apps/{package}/enabled',
+    route: '/extensions/apps',
+  },
 ];
 
 export function operationKey(method: string, path: string) {

@@ -28,7 +28,16 @@ const loading = ref(false);
 const error = ref('');
 const sections = computed(() =>
   snapshot.value
-    ? ['panel', 'console', 'engine', 'storage', 'models', 'sources']
+    ? [
+        'panel',
+        'console',
+        'engine',
+        'storage',
+        'models',
+        'sources',
+        'extensions',
+        'apps',
+      ]
     : [],
 );
 
