@@ -380,9 +380,6 @@ onBeforeUnmount(() => {
   left: 0;
   z-index: 10;
   padding: 12px 16px 8px;
-  background: color-mix(in srgb, hsl(var(--card)) 72%, transparent);
-  border-top: 1px solid hsl(var(--border));
-  backdrop-filter: blur(12px);
 }
 
 .chat-input-box {
@@ -390,9 +387,11 @@ onBeforeUnmount(() => {
   max-width: 760px;
   padding: 8px;
   margin: 0 auto;
-  background: hsl(var(--card));
+  background: color-mix(in srgb, hsl(var(--card)) 80%, transparent);
   border: 1px solid hsl(var(--border));
   border-radius: 24px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
   transition: border-color 0.2s;
 }
 
