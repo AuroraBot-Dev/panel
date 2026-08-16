@@ -316,9 +316,9 @@ onBeforeUnmount(() => {
 .chat-card {
   position: relative;
   max-width: min(90%, 1100px);
-  height: calc(100vh - 80px);
+  height: calc(100vh - 96px);
   min-height: 420px;
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - 96px);
   margin: 0 auto;
   overflow: hidden;
 }
