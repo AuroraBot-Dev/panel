@@ -42,7 +42,7 @@ const userPresets = [
     closable
     preset="card"
     bordered
-    style="width: 480px; margin-top: 10vh"
+    style="width: 480px"
     :mask-closable="true"
     title="聊天头像设置"
     @update:show="(value: boolean) => (show = value)"
