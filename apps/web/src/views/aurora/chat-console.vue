@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
         />
         <div class="chat-input-toolbar">
           <NButton
-            circle
+            round
             size="medium"
             :disabled="uploading"
             type="default"
@@ -283,7 +283,7 @@ onBeforeUnmount(() => {
             </template>
           </NButton>
           <NButton
-            circle
+            round
             size="medium"
             type="primary"
             :loading="sending"
@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  max-width: min(90%, 960px);
+  max-width: 100%;
   margin: 0 auto 16px;
 }
 
@@ -375,10 +375,12 @@ onBeforeUnmount(() => {
 }
 
 .chat-input-box {
+  max-width: 760px;
   padding: 8px 8px 4px;
+  margin: 0 auto;
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  border-radius: 12px;
+  border-radius: 16px;
   transition: border-color 0.2s;
 }
 
