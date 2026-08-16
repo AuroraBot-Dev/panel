@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
 .chat-card {
   display: flex;
   flex-direction: column;
-  max-width: 1100px;
+  max-width: 860px;
   height: calc(100vh - 220px);
   min-height: 520px;
   margin: 0 auto;
@@ -286,17 +286,15 @@ onBeforeUnmount(() => {
 .chat-body {
   flex: 1;
   min-height: 360px;
-  padding: 16px;
+  padding: 24px 8px;
   margin-bottom: 16px;
   overflow-y: auto;
-  background: hsl(var(--muted));
-  border: 1px solid hsl(var(--border));
-  border-radius: 8px;
 }
 
 .chat-line {
   display: flex;
-  margin-bottom: 12px;
+  max-width: 760px;
+  margin: 0 auto 16px;
 }
 
 .chat-user {
@@ -304,25 +302,35 @@ onBeforeUnmount(() => {
 }
 
 .chat-bubble {
-  max-width: min(760px, 85%);
+  max-width: 85%;
   padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.7;
   background: hsl(var(--card));
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
 }
 
 .chat-user .chat-bubble {
   color: hsl(var(--primary-foreground));
   background: hsl(var(--primary));
+  border-color: transparent;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-assistant .chat-bubble {
+  border-bottom-left-radius: 4px;
 }
 
 .chat-error .chat-bubble {
   color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive) / 30%);
 }
 
 .chat-bubble small {
   display: block;
   margin-bottom: 4px;
+  font-size: 11px;
   opacity: 0.65;
 }
 </style>

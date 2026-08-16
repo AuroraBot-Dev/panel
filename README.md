@@ -42,7 +42,7 @@ scripts/            vsh（内部 CLI）与 deploy（Docker 构建）
 
 - 认证：`/api/auth/login`、`/api/auth/logout`
 - 健康检查：`/api/health`、`/healthz`
-- 操作目录：`/api/ops` 与 30 个注册操作
+- 操作目录：`/api/ops` 与 31 个注册操作
 - 附件：`/api/ops/attachments`
 - 输出流：`/api/ops/stream`
 

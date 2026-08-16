@@ -7,3 +7,4 @@ export type * from './configuration';
 export type * from './engine';
 export type * from './extensions';
 export type * from './memory';
+export type * from './terminal';

@@ -187,6 +187,12 @@ export const operationCoverage: OperationCoverage[] = [
     path: '/apps/{package}/enabled',
     route: '/extensions/apps',
   },
+  {
+    feature: 'Terminal input',
+    method: 'POST',
+    path: '/terminal/input',
+    route: '/operations/logs',
+  },
 ];
 
 export function operationKey(method: string, path: string) {

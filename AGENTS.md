@@ -19,7 +19,7 @@
 
 - 后端是动态 `/api/ops/{path}` catch-all 路由，OpenAPI 无法表达具体 DTO → 前端不做生成类型，`apps/web/src/api/types/` 按后端契约手工同步。
 - 业务 URL 只能出现在 `apps/web/src/api/modules/`；`client.ts` 负责基址、Bearer 会话与 Operation envelope。
-- `operation-coverage.ts` 维护 30 个后端操作与页面路由的映射，`operation-coverage.test.ts` 断言恰好 30 个。后端操作增删时必须同步 `modules/`、`types/`、coverage 映射与测试。
+- `operation-coverage.ts` 维护 31 个后端操作与页面路由的映射，`operation-coverage.test.ts` 断言恰好 31 个。后端操作增删时必须同步 `modules/`、`types/`、coverage 映射与测试。
 
 ## 页面边界
 
