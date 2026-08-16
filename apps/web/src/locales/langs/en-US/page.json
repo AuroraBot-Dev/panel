@@ -127,7 +127,8 @@
         "placeholder": "Message AuroraBot (Ctrl+Enter to send)",
         "attachment": "Upload attachment",
         "uploaded": "Attachment uploaded",
-        "send": "Send"
+        "send": "Send",
+        "aiHint": "AI-generated content may be inaccurate"
       },
       "conversations": {
         "description": "Inspect message projections, causal events, and model outputs by session ID."

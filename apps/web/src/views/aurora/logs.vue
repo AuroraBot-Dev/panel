@@ -1,27 +1,39 @@
 <script lang="ts" setup>
 import type { OutputStreamItem } from '#/api';
 
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
+import { NInput } from 'naive-ui';
+
 import { getActivities } from '#/api';
 
-interface TerminalLine {
+interface LogLine {
   at: string;
   kind: 'error' | 'output' | 'system';
   text: string;
 }
 
-const lines = ref<TerminalLine[]>([]);
+const lines = ref<LogLine[]>([]);
 const cursor = ref(0);
-const terminalBody = ref<HTMLElement>();
+const logBody = ref<HTMLElement>();
 let pollTimer: ReturnType<typeof setInterval> | undefined;
+
+const logText = computed(() =>
+  lines.value
+    .map((line) => {
+      const prefix = line.kind === 'error' ? '[error]' : '[log]';
+      return `${line.at} ${prefix} ${line.text}`;
+    })
+    .join('\n'),
+);
 
 function scrollBottom() {
   void nextTick(() => {
-    if (terminalBody.value) {
-      terminalBody.value.scrollTop = terminalBody.value.scrollHeight;
+    const textarea = logBody.value?.querySelector('textarea');
+    if (textarea) {
+      textarea.scrollTop = textarea.scrollHeight;
     }
   });
 }
@@ -57,7 +69,7 @@ async function pollActivities() {
     page.items.forEach(appendOutput);
     cursor.value = page.next_cursor;
   } catch {
-    // Keep terminal log stream alive even when polling fails.
+    // Keep log stream alive even when polling fails.
   }
 }
 
@@ -73,60 +85,28 @@ onBeforeUnmount(() => {
 
 <template>
   <Page>
-    <div ref="terminalBody" class="terminal-body">
-      <div v-if="!lines.length" class="terminal-muted">AuroraBot 运行日志</div>
-      <div
-        v-for="(line, index) in lines"
-        :key="`${line.at}-${index}`"
-        class="terminal-line"
-        :class="`terminal-${line.kind}`"
-      >
-        <span class="terminal-time">{{ line.at }}</span>
-        <span class="terminal-text whitespace-pre-wrap">{{ line.text }}</span>
-      </div>
+    <div ref="logBody" class="log-body">
+      <NInput
+        class="log-textarea"
+        placeholder="AuroraBot 运行日志"
+        readonly
+        type="textarea"
+        :value="logText"
+      />
     </div>
   </Page>
 </template>
 
 <style scoped>
-.terminal-body {
-  height: calc(100vh - 180px);
+.log-body {
+  height: 100%;
   min-height: 420px;
-  padding: 16px;
-  overflow-y: auto;
+}
+
+.log-textarea {
+  height: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 13px;
   line-height: 1.7;
-  color: #d4d4d4;
-  background: #0d1117;
-  border: 1px solid #21262d;
-  border-radius: 8px;
-}
-
-.terminal-line {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.terminal-time {
-  flex: none;
-  color: #565f89;
-}
-
-.terminal-muted {
-  color: #565f89;
-}
-
-.terminal-output .terminal-text {
-  color: #d4d4d4;
-}
-
-.terminal-error .terminal-text {
-  color: #ff7b72;
-}
-
-.terminal-system .terminal-text {
-  color: #79c0ff;
 }
 </style>

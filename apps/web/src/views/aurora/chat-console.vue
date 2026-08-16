@@ -8,9 +8,10 @@ import type {
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { useAccessStore } from '@vben/stores';
 
-import { NAlert, NButton, NInput, NSpace, NTag } from 'naive-ui';
+import { NAlert, NAvatar, NButton, NInput, NTag } from 'naive-ui';
 
 import { message } from '#/adapter/naive';
 import {
@@ -40,6 +41,7 @@ const uploading = ref(false);
 const connected = ref(false);
 const error = ref('');
 const chatBody = ref<HTMLElement>();
+const fileInput = ref<HTMLInputElement>();
 const seenActivities = new Set<string>();
 let cursor = 0;
 let socket: undefined | WebSocket;
@@ -161,6 +163,10 @@ async function submit() {
   }
 }
 
+function triggerFileInput() {
+  fileInput.value?.click();
+}
+
 async function selectFile(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -215,10 +221,26 @@ onBeforeUnmount(() => {
           class="chat-line"
           :class="[`chat-${line.kind}`]"
         >
+          <NAvatar
+            v-if="line.kind !== 'user'"
+            class="chat-avatar"
+            :size="32"
+            round
+          >
+            <IconifyIcon icon="lucide:bot" class="size-4" />
+          </NAvatar>
           <div class="chat-bubble">
             <small>{{ line.kind }} · {{ line.at }}</small>
             <div class="whitespace-pre-wrap">{{ line.text }}</div>
           </div>
+          <NAvatar
+            v-if="line.kind === 'user'"
+            class="chat-avatar"
+            :size="32"
+            round
+          >
+            <IconifyIcon icon="lucide:user" class="size-4" />
+          </NAvatar>
         </div>
       </div>
 
@@ -239,36 +261,38 @@ onBeforeUnmount(() => {
         </NTag>
       </div>
 
-      <NInput
-        v-model:value="text"
-        type="textarea"
-        :autosize="{ minRows: 3, maxRows: 8 }"
-        :placeholder="$t('page.aurora.panel.chat.placeholder')"
-        @keydown.ctrl.enter.prevent="submit"
-      />
-      <div class="mt-3 flex justify-between">
-        <label class="cursor-pointer">
-          {{
-            uploading
-              ? $t('page.aurora.panel.loading')
-              : $t('page.aurora.panel.chat.attachment')
-          }}
-          <input
-            class="hidden"
-            type="file"
-            :disabled="uploading"
-            @change="selectFile"
-          />
-        </label>
-        <NSpace>
-          <NButton @click="loadHistory">
-            {{ $t('page.aurora.panel.refresh') }}
-          </NButton>
-          <NButton type="primary" :loading="sending" @click="submit">
-            {{ $t('page.aurora.panel.chat.send') }}
-          </NButton>
-        </NSpace>
+      <div class="chat-actions">
+        <NButton
+          circle
+          :disabled="uploading"
+          type="default"
+          @click="triggerFileInput"
+        >
+          <template #icon>
+            <IconifyIcon icon="lucide:plus" class="size-4" />
+          </template>
+        </NButton>
+        <NInput
+          v-model:value="text"
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 6 }"
+          :placeholder="$t('page.aurora.panel.chat.placeholder')"
+          @keydown.ctrl.enter.prevent="submit"
+        />
+        <NButton circle type="primary" :loading="sending" @click="submit">
+          <template #icon>
+            <IconifyIcon icon="lucide:arrow-up" class="size-4" />
+          </template>
+        </NButton>
+        <input
+          ref="fileInput"
+          class="hidden"
+          type="file"
+          :disabled="uploading"
+          @change="selectFile"
+        />
       </div>
+      <p class="chat-ai-hint">{{ $t('page.aurora.panel.chat.aiHint') }}</p>
     </div>
   </Page>
 </template>
@@ -293,12 +317,18 @@ onBeforeUnmount(() => {
 
 .chat-line {
   display: flex;
+  gap: 8px;
+  align-items: flex-start;
   max-width: 760px;
   margin: 0 auto 16px;
 }
 
 .chat-user {
   justify-content: flex-end;
+}
+
+.chat-avatar {
+  flex: none;
 }
 
 .chat-bubble {
@@ -332,5 +362,19 @@ onBeforeUnmount(() => {
   margin-bottom: 4px;
   font-size: 11px;
   opacity: 0.65;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.chat-ai-hint {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
 }
 </style>
