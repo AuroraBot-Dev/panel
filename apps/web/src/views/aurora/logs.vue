@@ -1,239 +1,99 @@
 <script lang="ts" setup>
-import type { OutputStreamItem } from '#/api';
+import type { DataTableColumns } from 'naive-ui';
 
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import type { JsonRecord, OutputStreamItem } from '#/api';
+
+import { onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
-import { NInput } from 'naive-ui';
+import {
+  NAlert,
+  NButton,
+  NCard,
+  NDataTable,
+  NDescriptions,
+  NDescriptionsItem,
+} from 'naive-ui';
 
-import { getActivities, sendTerminalInput } from '#/api';
+import { getActivities, getConsoleLogStatus } from '#/api';
+import { $t } from '#/locales';
 
-interface TerminalLine {
-  at: string;
-  kind: 'error' | 'input' | 'output' | 'system';
-  text: string;
-}
-
-const lines = ref<TerminalLine[]>([]);
-const input = ref('');
+const activities = ref<OutputStreamItem[]>([]);
 const cursor = ref(0);
-const sending = ref(false);
-const terminalBody = ref<HTMLElement>();
-let pollTimer: ReturnType<typeof setInterval> | undefined;
+const consoleStatus = ref<JsonRecord>({});
+const loading = ref(false);
+const error = ref('');
 
-function scrollBottom() {
-  void nextTick(() => {
-    if (terminalBody.value) {
-      terminalBody.value.scrollTop = terminalBody.value.scrollHeight;
+const columns: DataTableColumns<OutputStreamItem> = [
+  { key: 'cursor', title: 'Cursor', width: 90 },
+  { key: 'kind', title: 'Kind', width: 100 },
+  { key: 'session_id', title: 'Session', ellipsis: { tooltip: true } },
+  { key: 'task_id', title: 'Task', ellipsis: { tooltip: true } },
+  { key: 'text', title: $t('page.aurora.panel.output') },
+  { key: 'at', title: $t('page.aurora.panel.createdAt') },
+];
+
+async function load(reset = false) {
+  loading.value = true;
+  error.value = '';
+  try {
+    if (reset) {
+      cursor.value = 0;
+      activities.value = [];
     }
-  });
-}
-
-function push(line: TerminalLine) {
-  lines.value.push(line);
-  scrollBottom();
-}
-
-function formatTime(value: string) {
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? value : date.toLocaleTimeString();
-}
-
-function appendOutput(item: OutputStreamItem) {
-  cursor.value = Math.max(cursor.value, item.cursor);
-  push({
-    at: formatTime(item.at),
-    kind: item.kind === 'error' ? 'error' : 'output',
-    text: item.text,
-  });
-}
-
-async function loadHistory() {
-  try {
-    const page = await getActivities(0, 200);
-    page.items.forEach(appendOutput);
+    const [page, status] = await Promise.all([
+      getActivities(cursor.value, 64),
+      getConsoleLogStatus(),
+    ]);
+    const known = new Set(activities.value.map((item) => item.activity_id));
+    activities.value.push(
+      ...page.items.filter((item) => !known.has(item.activity_id)),
+    );
     cursor.value = page.next_cursor;
-  } catch {
-    // Global request handler reports transport errors.
-  }
-}
-
-async function pollActivities() {
-  try {
-    const page = await getActivities(cursor.value, 64);
-    page.items.forEach(appendOutput);
-    cursor.value = page.next_cursor;
-  } catch {
-    // Keep terminal alive even when polling fails.
-  }
-}
-
-async function submit() {
-  const text = input.value.trim();
-  if (!text || sending.value) return;
-  input.value = '';
-  sending.value = true;
-  push({
-    at: formatTime(new Date().toISOString()),
-    kind: 'input',
-    text: `> ${text}`,
-  });
-  try {
-    const result = await sendTerminalInput({
-      client_message_id: crypto.randomUUID(),
-      session_id: 'panel:terminal',
-      text,
-    });
-    if (result.control === 'clear_console') {
-      lines.value = [];
-      push({
-        at: formatTime(new Date().toISOString()),
-        kind: 'system',
-        text: '[console cleared]',
-      });
-    } else if (result.text) {
-      push({
-        at: formatTime(new Date().toISOString()),
-        kind: result.ok ? 'output' : 'error',
-        text: result.text,
-      });
-    } else if (result.message_id) {
-      push({
-        at: formatTime(new Date().toISOString()),
-        kind: 'system',
-        text: `[submitted ${result.message_id}]`,
-      });
-    }
-  } catch (submitError) {
-    push({
-      at: formatTime(new Date().toISOString()),
-      kind: 'error',
-      text: (submitError as Error).message,
-    });
+    consoleStatus.value = status;
+  } catch (loadError) {
+    error.value = (loadError as Error).message;
   } finally {
-    sending.value = false;
-    scrollBottom();
+    loading.value = false;
   }
 }
 
-onMounted(async () => {
-  await loadHistory();
-  pollTimer = setInterval(pollActivities, 2000);
-});
-
-onBeforeUnmount(() => {
-  if (pollTimer) clearInterval(pollTimer);
-});
+onMounted(() => load(true));
 </script>
 
 <template>
   <Page>
-    <div ref="terminalBody" class="terminal-body">
-      <div v-if="!lines.length" class="terminal-muted">
-        AuroraBot Terminal — 输入 /help 查看命令
-      </div>
-      <div
-        v-for="(line, index) in lines"
-        :key="`${line.at}-${index}`"
-        class="terminal-line"
-        :class="`terminal-${line.kind}`"
-      >
-        <span v-if="line.kind !== 'input'" class="terminal-time">
-          {{ line.at }}
-        </span>
-        <span class="terminal-text whitespace-pre-wrap">{{ line.text }}</span>
-      </div>
-    </div>
-    <div class="terminal-input">
-      <span class="terminal-prompt">aurora&gt;</span>
-      <NInput
-        v-model:value="input"
-        :autofocus="true"
-        class="terminal-input-field"
-        :disabled="sending"
-        placeholder="输入命令或消息，Enter 发送"
-        @keydown.enter.prevent="submit"
+    <NAlert v-if="error" class="mb-4" :title="error" type="error" />
+    <NAlert
+      class="mb-4"
+      :title="$t('page.aurora.panel.logs.consoleScope')"
+      type="info"
+    />
+    <NCard class="mb-4" title="Console status">
+      <NDescriptions :column="2" bordered size="small">
+        <NDescriptionsItem
+          v-for="(item, key) in consoleStatus"
+          :key="key"
+          :label="key"
+        >
+          {{ String(item) }}
+        </NDescriptionsItem>
+      </NDescriptions>
+    </NCard>
+    <NCard title="Output activities">
+      <NDataTable
+        :columns="columns"
+        :data="activities"
+        :loading="loading"
+        :pagination="false"
+        size="small"
       />
-    </div>
+      <div class="mt-4 flex justify-end">
+        <NButton type="primary" :loading="loading" @click="load(false)">
+          {{ $t('page.aurora.panel.loadMore') }}
+        </NButton>
+      </div>
+    </NCard>
   </Page>
 </template>
-
-<style scoped>
-.terminal-body {
-  height: calc(100vh - 220px);
-  min-height: 420px;
-  padding: 16px;
-  overflow-y: auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 13px;
-  line-height: 1.7;
-  color: #d4d4d4;
-  background: #0d1117;
-  border: 1px solid #21262d;
-  border-radius: 8px;
-}
-
-.terminal-line {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.terminal-time {
-  flex: none;
-  color: #565f89;
-}
-
-.terminal-input {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 8px 12px;
-  margin-top: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 13px;
-  color: #d4d4d4;
-  background: #0d1117;
-  border: 1px solid #21262d;
-  border-radius: 8px;
-}
-
-.terminal-prompt {
-  flex: none;
-  color: #7ee787;
-}
-
-.terminal-input-field {
-  font-family: inherit;
-}
-
-.terminal-input-field :deep(.n-input-wrapper) {
-  background: transparent;
-}
-
-.terminal-input-field :deep(input) {
-  font-family: inherit;
-  color: #d4d4d4;
-}
-
-.terminal-muted {
-  color: #565f89;
-}
-
-.terminal-output .terminal-text {
-  color: #d4d4d4;
-}
-
-.terminal-input .terminal-text {
-  color: #7ee787;
-}
-
-.terminal-error .terminal-text {
-  color: #ff7b72;
-}
-
-.terminal-system .terminal-text {
-  color: #79c0ff;
-}
-</style>

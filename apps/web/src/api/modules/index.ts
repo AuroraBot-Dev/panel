@@ -9,4 +9,3 @@ export * from './engine';
 export * from './extensions';
 export * from './memory';
 export * from './system';
-export * from './terminal';

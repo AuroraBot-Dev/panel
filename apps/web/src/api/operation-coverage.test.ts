@@ -37,13 +37,12 @@ const backendOperations = [
   ['POST', '/extensions/{extension_id}/enabled'],
   ['GET', '/apps'],
   ['POST', '/apps/{package}/enabled'],
-  ['POST', '/terminal/input'],
 ] as const;
 
 describe('aurora operation coverage', () => {
-  it('maps all 31 registered backend operations to a domain page', () => {
-    expect(operationCoverage).toHaveLength(31);
-    expect(operationCoverageKeys.size).toBe(31);
+  it('maps all 30 registered backend operations to a domain page', () => {
+    expect(operationCoverage).toHaveLength(30);
+    expect(operationCoverageKeys.size).toBe(30);
     expect(
       backendOperations.filter(
         ([method, path]) =>
