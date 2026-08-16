@@ -23,7 +23,6 @@ import {
   NInput,
   NInputNumber,
   NSelect,
-  NSpace,
   NTabPane,
   NTabs,
   NTag,
@@ -254,12 +253,6 @@ async function showAgent(agentId: string) {
   drawerOpen.value = true;
 }
 
-function reload() {
-  if (activeTab.value === 'agents') return loadAgents();
-  if (activeTab.value === 'events') return loadEvents();
-  return loadTasks();
-}
-
 onMounted(async () => {
   await Promise.all([loadTasks(), loadAgents(), loadEvents()]);
 });
@@ -267,15 +260,6 @@ onMounted(async () => {
 
 <template>
   <Page>
-    <template #extra>
-      <NSpace>
-        <NInputNumber v-model:value="limit" :max="500" :min="1" />
-        <NButton :loading="loading" @click="reload">
-          {{ $t('page.aurora.panel.refresh') }}
-        </NButton>
-      </NSpace>
-    </template>
-
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NCard>
       <NTabs v-model:value="activeTab">

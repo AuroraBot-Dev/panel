@@ -9,7 +9,7 @@
     },
     "nav": {
       "overview": "首页",
-      "observation": "Agent 观察",
+      "observation": "观察",
       "chat": "聊天",
       "configuration": "配置",
       "resources": "资源",
@@ -173,7 +173,7 @@
     },
     "features": {
       "observation": {
-        "title": "Agent 观察",
+        "title": "观察",
         "description": "组件健康、事件、告警与运行状态。",
         "api": "agents / metrics / logs"
       },

@@ -140,11 +140,6 @@ onMounted(load);
 
 <template>
   <Page>
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NAlert
       v-if="unknownOperations.length"

@@ -282,7 +282,10 @@ function handleLanguageToggleSelect(event?: Event) {
   event?.preventDefault();
   showLanguageList.value = !showLanguageList.value;
 }
-async function handleLocaleChange(event: Event, value: 'en-US' | 'zh-CN') {
+async function handleLocaleChange(
+  event: Event,
+  value: 'en-US' | 'ja-JP' | 'zh-CN',
+) {
   // 阻止默认关闭，让用户能继续看到选择结果；选完手动收起
   event.preventDefault();
   updatePreferences({ app: { locale: value } });

@@ -206,11 +206,6 @@ onBeforeUnmount(() => {
 
 <template>
   <Page>
-    <template #extra>
-      <NTag :type="connected ? 'success' : 'warning'">
-        {{ connected ? 'WebSocket' : $t('page.aurora.panel.chat.polling') }}
-      </NTag>
-    </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <div class="chat-card">
       <div ref="chatBody" class="chat-body">

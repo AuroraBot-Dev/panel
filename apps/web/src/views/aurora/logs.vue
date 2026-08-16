@@ -14,24 +14,14 @@ import {
   NDataTable,
   NDescriptions,
   NDescriptionsItem,
-  NSpace,
-  NSwitch,
-  NTag,
 } from 'naive-ui';
 
-import { dialog, message } from '#/adapter/naive';
-import {
-  clearConsole,
-  getActivities,
-  getConsoleLogStatus,
-  setConsoleLog,
-} from '#/api';
+import { getActivities, getConsoleLogStatus } from '#/api';
 import { $t } from '#/locales';
 
 const activities = ref<OutputStreamItem[]>([]);
 const cursor = ref(0);
 const consoleStatus = ref<JsonRecord>({});
-const consoleEnabled = ref(false);
 const loading = ref(false);
 const error = ref('');
 
@@ -62,7 +52,6 @@ async function load(reset = false) {
     );
     cursor.value = page.next_cursor;
     consoleStatus.value = status;
-    consoleEnabled.value = Boolean(status.enabled);
   } catch (loadError) {
     error.value = (loadError as Error).message;
   } finally {
@@ -70,43 +59,11 @@ async function load(reset = false) {
   }
 }
 
-async function toggleConsole(checked: boolean | number | string) {
-  const enabled = checked === true;
-  try {
-    await setConsoleLog(enabled);
-    consoleEnabled.value = enabled;
-    await load(false);
-  } catch {
-    consoleEnabled.value = !enabled;
-  }
-}
-
-function confirmClear() {
-  dialog.warning({
-    content: $t('page.aurora.panel.logs.clearHelp'),
-    title: $t('page.aurora.panel.logs.clear'),
-    async onPositiveClick() {
-      await clearConsole();
-      message.success($t('page.aurora.panel.logs.clearResult'));
-    },
-  });
-}
-
 onMounted(() => load(true));
 </script>
 
 <template>
   <Page>
-    <template #extra>
-      <NSpace align="center">
-        <NTag type="warning">console_only</NTag>
-        <span>Terminal log</span>
-        <NSwitch :value="consoleEnabled" @update:value="toggleConsole" />
-        <NButton type="error" @click="confirmClear">
-          {{ $t('page.aurora.panel.logs.clear') }}
-        </NButton>
-      </NSpace>
-    </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NAlert
       class="mb-4"
@@ -132,10 +89,7 @@ onMounted(() => load(true));
         :pagination="false"
         size="small"
       />
-      <div class="mt-4 flex justify-end gap-2">
-        <NButton @click="load(true)">
-          {{ $t('page.aurora.panel.refresh') }}
-        </NButton>
+      <div class="mt-4 flex justify-end">
         <NButton type="primary" :loading="loading" @click="load(false)">
           {{ $t('page.aurora.panel.loadMore') }}
         </NButton>

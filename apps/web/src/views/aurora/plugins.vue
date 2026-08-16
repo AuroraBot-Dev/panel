@@ -7,15 +7,7 @@ import { computed, h, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
-import {
-  NAlert,
-  NButton,
-  NCard,
-  NDataTable,
-  NSpace,
-  NSwitch,
-  NTag,
-} from 'naive-ui';
+import { NAlert, NCard, NDataTable, NSpace, NSwitch, NTag } from 'naive-ui';
 
 import { dialog, message } from '#/adapter/naive';
 import { listExtensions, setExtensionEnabled } from '#/api';
@@ -136,11 +128,6 @@ onMounted(load);
 
 <template>
   <Page>
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NAlert
       class="mb-4"

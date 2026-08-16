@@ -12,7 +12,7 @@ import {
 import { preferences } from '@vben/preferences';
 
 import dayjs from 'dayjs';
-import { dateEnUS, dateZhCN, enUS, zhCN } from 'naive-ui';
+import { dateEnUS, dateJaJP, dateZhCN, enUS, jaJP, zhCN } from 'naive-ui';
 
 const naiveLocale = ref(enUS);
 const naiveDateLocale = ref(dateEnUS);
@@ -55,6 +55,10 @@ async function loadDayjsLocale(lang: SupportedLanguagesType) {
       locale = await import('dayjs/locale/en');
       break;
     }
+    case 'ja-JP': {
+      locale = await import('dayjs/locale/ja');
+      break;
+    }
     case 'zh-CN': {
       locale = await import('dayjs/locale/zh-cn');
       break;
@@ -80,6 +84,11 @@ async function loadNaiveLocale(lang: SupportedLanguagesType) {
     case 'en-US': {
       naiveLocale.value = enUS;
       naiveDateLocale.value = dateEnUS;
+      break;
+    }
+    case 'ja-JP': {
+      naiveLocale.value = jaJP;
+      naiveDateLocale.value = dateJaJP;
       break;
     }
     case 'zh-CN': {

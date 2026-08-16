@@ -9,7 +9,6 @@ import { Page } from '@vben/common-ui';
 
 import {
   NAlert,
-  NButton,
   NCard,
   NDataTable,
   NDescriptions,
@@ -20,7 +19,6 @@ import {
 
 import { getAgentProfiles, getConfigSnapshot } from '#/api';
 import ConfigSection from '#/components/aurora/config-section.vue';
-import { $t } from '#/locales';
 
 const profiles = ref<AgentProfile[]>([]);
 const snapshot = ref<ConfigSnapshot>();
@@ -81,11 +79,6 @@ onMounted(load);
 
 <template>
   <Page>
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NCard class="mb-4" title="Runtime profile">
       <NDescriptions :column="2" bordered size="small">

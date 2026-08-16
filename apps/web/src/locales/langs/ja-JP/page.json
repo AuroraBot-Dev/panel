@@ -9,7 +9,7 @@
     },
     "nav": {
       "overview": "Overview",
-      "observation": "Observation",
+      "observation": "観察",
       "chat": "Chat",
       "configuration": "Configuration",
       "resources": "Resources",
@@ -173,7 +173,7 @@
     },
     "features": {
       "observation": {
-        "title": "Observation",
+        "title": "観察",
         "description": "Component health, events, alerts, and runtime status.",
         "api": "agents / metrics / logs"
       },
