@@ -19,7 +19,7 @@ import {
 } from 'naive-ui';
 
 import { getAgentProfiles, getConfigSnapshot } from '#/api';
-import JsonView from '#/components/aurora/json-view.vue';
+import ConfigSection from '#/components/aurora/config-section.vue';
 import { $t } from '#/locales';
 
 const profiles = ref<AgentProfile[]>([]);
@@ -111,7 +111,10 @@ onMounted(load);
           :name="section"
           :tab="section"
         >
-          <JsonView :value="snapshot?.[section as keyof ConfigSnapshot]" />
+          <ConfigSection
+            :section="section"
+            :value="snapshot?.[section as keyof ConfigSnapshot]"
+          />
         </NTabPane>
       </NTabs>
     </NCard>

@@ -142,6 +142,10 @@
         "toggleDone": "App state updated; restart required.",
         "restartHint": "MCP apps are connected at process startup; a restart is required to apply changes."
       },
+      "prompts": {
+        "copy": "Copy prompt",
+        "copied": "Prompt copied"
+      },
       "logs": {
         "clear": "Clear terminal",
         "clearHelp": "The HTTP operation only returns a console control result and does not clear browser data.",

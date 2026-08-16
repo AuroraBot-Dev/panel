@@ -142,6 +142,10 @@
         "toggleDone": "应用启用状态已更新，重启后生效。",
         "restartHint": "MCP 应用在进程启动时连接；切换后需要重启 AuroraBot 才会生效。"
       },
+      "prompts": {
+        "copy": "复制提示词",
+        "copied": "提示词已复制"
+      },
       "logs": {
         "clear": "清空终端",
         "clearHelp": "该 HTTP 操作只返回 console 控制结果，不会清除浏览器数据。",

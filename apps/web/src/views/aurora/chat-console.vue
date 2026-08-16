@@ -10,7 +10,7 @@ import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { Page } from '@vben/common-ui';
 import { useAccessStore } from '@vben/stores';
 
-import { NAlert, NButton, NCard, NInput, NSpace, NTag } from 'naive-ui';
+import { NAlert, NButton, NInput, NSpace, NTag } from 'naive-ui';
 
 import { message } from '#/adapter/naive';
 import {
@@ -215,7 +215,7 @@ onBeforeUnmount(() => {
       </NTag>
     </template>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
-    <NCard class="chat-card">
+    <div class="chat-card">
       <div ref="chatBody" class="chat-body">
         <div
           v-for="line in lines"
@@ -277,23 +277,28 @@ onBeforeUnmount(() => {
           </NButton>
         </NSpace>
       </div>
-    </NCard>
+    </div>
   </Page>
 </template>
 
 <style scoped>
 .chat-card {
+  display: flex;
+  flex-direction: column;
   max-width: 1100px;
+  height: calc(100vh - 220px);
+  min-height: 520px;
   margin: 0 auto;
 }
 
 .chat-body {
-  height: 55vh;
+  flex: 1;
   min-height: 360px;
   padding: 16px;
   margin-bottom: 16px;
   overflow-y: auto;
   background: hsl(var(--muted));
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
 }
 

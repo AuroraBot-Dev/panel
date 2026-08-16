@@ -12,6 +12,8 @@ import {
   NButton,
   NCard,
   NDataTable,
+  NDescriptions,
+  NDescriptionsItem,
   NSpace,
   NSwitch,
   NTag,
@@ -24,7 +26,6 @@ import {
   getConsoleLogStatus,
   setConsoleLog,
 } from '#/api';
-import JsonView from '#/components/aurora/json-view.vue';
 import { $t } from '#/locales';
 
 const activities = ref<OutputStreamItem[]>([]);
@@ -116,7 +117,15 @@ onMounted(() => load(true));
       type="info"
     />
     <NCard class="mb-4" title="Console status">
-      <JsonView :value="consoleStatus" />
+      <NDescriptions :column="2" bordered size="small">
+        <NDescriptionsItem
+          v-for="(item, key) in consoleStatus"
+          :key="key"
+          :label="key"
+        >
+          {{ String(item) }}
+        </NDescriptionsItem>
+      </NDescriptions>
     </NCard>
     <NCard title="Output activities">
       <NDataTable
