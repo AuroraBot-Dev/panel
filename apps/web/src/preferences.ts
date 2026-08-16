@@ -38,8 +38,8 @@ export const overridesPreferences = defineOverridesPreferences({
   },
   sidebar: {
     collapsed: true,
-    collapsedButton: false,
-    fixedButton: false,
+    collapsedButton: true,
+    fixedButton: true,
   },
   tabbar: {
     enable: false,
