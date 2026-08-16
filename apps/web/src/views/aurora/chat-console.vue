@@ -316,8 +316,9 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   max-width: min(90%, 1100px);
-  height: 100%;
-  min-height: 520px;
+  height: calc(100vh - 80px);
+  min-height: 420px;
+  max-height: calc(100vh - 80px);
   margin: 0 auto;
   overflow: hidden;
 }
