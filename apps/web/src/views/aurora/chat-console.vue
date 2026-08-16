@@ -261,29 +261,39 @@ onBeforeUnmount(() => {
         </NTag>
       </div>
 
-      <div class="chat-actions">
-        <NButton
-          circle
-          :disabled="uploading"
-          type="default"
-          @click="triggerFileInput"
-        >
-          <template #icon>
-            <IconifyIcon icon="lucide:plus" class="size-4" />
-          </template>
-        </NButton>
+      <div class="chat-input-box">
         <NInput
           v-model:value="text"
           type="textarea"
-          :autosize="{ minRows: 2, maxRows: 6 }"
+          :autosize="{ minRows: 5, maxRows: 10 }"
+          :bordered="false"
           :placeholder="$t('page.aurora.panel.chat.placeholder')"
           @keydown.ctrl.enter.prevent="submit"
         />
-        <NButton circle type="primary" :loading="sending" @click="submit">
-          <template #icon>
-            <IconifyIcon icon="lucide:arrow-up" class="size-4" />
-          </template>
-        </NButton>
+        <div class="chat-input-toolbar">
+          <NButton
+            circle
+            size="small"
+            :disabled="uploading"
+            type="default"
+            @click="triggerFileInput"
+          >
+            <template #icon>
+              <IconifyIcon icon="lucide:plus" class="size-4" />
+            </template>
+          </NButton>
+          <NButton
+            circle
+            size="small"
+            type="primary"
+            :loading="sending"
+            @click="submit"
+          >
+            <template #icon>
+              <IconifyIcon icon="lucide:arrow-up" class="size-4" />
+            </template>
+          </NButton>
+        </div>
         <input
           ref="fileInput"
           class="hidden"
@@ -364,10 +374,27 @@ onBeforeUnmount(() => {
   opacity: 0.65;
 }
 
-.chat-actions {
+.chat-input-box {
+  padding: 8px 8px 4px;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  transition: border-color 0.2s;
+}
+
+.chat-input-box:focus-within {
+  border-color: hsl(var(--primary));
+}
+
+.chat-input-box :deep(.n-input) {
+  background: transparent;
+}
+
+.chat-input-toolbar {
   display: flex;
-  gap: 8px;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
 }
 
 .chat-ai-hint {
