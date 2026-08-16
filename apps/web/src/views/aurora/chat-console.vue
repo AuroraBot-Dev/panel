@@ -265,7 +265,7 @@ onBeforeUnmount(() => {
         <NInput
           v-model:value="text"
           type="textarea"
-          :autosize="{ minRows: 5, maxRows: 10 }"
+          :autosize="{ minRows: 3, maxRows: 8 }"
           :bordered="false"
           :placeholder="$t('page.aurora.panel.chat.placeholder')"
           @keydown.ctrl.enter.prevent="submit"
@@ -273,24 +273,24 @@ onBeforeUnmount(() => {
         <div class="chat-input-toolbar">
           <NButton
             circle
-            size="small"
+            size="medium"
             :disabled="uploading"
             type="default"
             @click="triggerFileInput"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:plus" class="size-4" />
+              <IconifyIcon icon="lucide:plus" class="size-5" />
             </template>
           </NButton>
           <NButton
             circle
-            size="small"
+            size="medium"
             type="primary"
             :loading="sending"
             @click="submit"
           >
             <template #icon>
-              <IconifyIcon icon="lucide:arrow-up" class="size-4" />
+              <IconifyIcon icon="lucide:arrow-up" class="size-5" />
             </template>
           </NButton>
         </div>
@@ -311,7 +311,7 @@ onBeforeUnmount(() => {
 .chat-card {
   display: flex;
   flex-direction: column;
-  max-width: 860px;
+  max-width: min(90%, 1100px);
   height: 100%;
   min-height: 520px;
   margin: 0 auto;
@@ -329,7 +329,7 @@ onBeforeUnmount(() => {
   display: flex;
   gap: 8px;
   align-items: flex-start;
-  max-width: 760px;
+  max-width: min(90%, 960px);
   margin: 0 auto 16px;
 }
 
