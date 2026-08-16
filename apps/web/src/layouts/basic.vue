@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
@@ -7,8 +7,8 @@ import { BasicLayout, LockScreen, UserDropdown } from '@vben/layouts';
 import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
+import ChatAvatarSettingsModal from '#/components/aurora/chat-avatar-settings-modal.vue';
 import { $t } from '#/locales';
-import { router } from '#/router';
 import { useAuthStore, useChatAvatarStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
@@ -16,6 +16,7 @@ const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
 const chatAvatar = useChatAvatarStore();
+const showChatAvatarSettings = ref(false);
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
 
@@ -28,7 +29,9 @@ const avatar = computed(
 
 const userMenus = [
   {
-    handler: () => router.push('/settings/chat-avatars'),
+    handler: () => {
+      showChatAvatarSettings.value = true;
+    },
     icon: 'lucide:smile',
     text: $t('page.aurora.features.chatAvatars.title'),
   },
@@ -96,4 +99,5 @@ watch(
       <LockScreen :avatar @to-login="handleLogout" />
     </template>
   </BasicLayout>
+  <ChatAvatarSettingsModal v-model:show="showChatAvatarSettings" />
 </template>
