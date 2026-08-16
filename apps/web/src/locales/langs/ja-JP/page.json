@@ -243,6 +243,10 @@
         "description": "Browse extensions; phase one never executes installs.",
         "api": "plugins"
       },
+      "chatAvatars": {
+        "title": "チャットアバター設定",
+        "description": "チャットのBotとユーザーアバターをカスタマイズします。"
+      },
       "logs": {
         "title": "Runtime logs",
         "description": "Search logs by time, level, and component.",

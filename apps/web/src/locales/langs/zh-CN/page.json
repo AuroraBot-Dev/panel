@@ -243,6 +243,10 @@
         "description": "浏览可用扩展；第一阶段不会执行安装。",
         "api": "plugins"
       },
+      "chatAvatars": {
+        "title": "聊天头像设置",
+        "description": "设置聊天界面中 Bot 与用户头像。"
+      },
       "logs": {
         "title": "运行日志",
         "description": "按时间、级别和组件检索运行日志。",

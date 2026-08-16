@@ -24,6 +24,7 @@ import {
   uploadAttachment,
 } from '#/api';
 import { $t } from '#/locales';
+import { useChatAvatarStore } from '#/store';
 
 interface ChatLine {
   at: string;
@@ -33,6 +34,7 @@ interface ChatLine {
 }
 
 const accessStore = useAccessStore();
+const chatAvatar = useChatAvatarStore();
 const lines = ref<ChatLine[]>([]);
 const attachments = ref<AttachmentRecord[]>([]);
 const text = ref('');
@@ -48,6 +50,14 @@ let socket: undefined | WebSocket;
 let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 let disposed = false;
+
+function avatarUrl(line: ChatLine) {
+  return line.kind === 'user' ? chatAvatar.userUrl : chatAvatar.botUrl;
+}
+
+function avatarIcon(line: ChatLine) {
+  return line.kind === 'user' ? chatAvatar.userIcon : chatAvatar.botIcon;
+}
 
 function scrollBottom() {
   void nextTick(() => {
@@ -230,8 +240,13 @@ onBeforeUnmount(() => {
             class="chat-avatar"
             :size="32"
             round
+            :src="avatarUrl(line) || undefined"
           >
-            <IconifyIcon icon="lucide:bot" class="size-4" />
+            <IconifyIcon
+              v-if="!avatarUrl(line)"
+              :icon="avatarIcon(line)"
+              class="size-4"
+            />
           </NAvatar>
           <div class="chat-bubble">
             <small>{{ line.kind }} · {{ line.at }}</small>
@@ -242,8 +257,13 @@ onBeforeUnmount(() => {
             class="chat-avatar"
             :size="32"
             round
+            :src="avatarUrl(line) || undefined"
           >
-            <IconifyIcon icon="lucide:user" class="size-4" />
+            <IconifyIcon
+              v-if="!avatarUrl(line)"
+              :icon="avatarIcon(line)"
+              class="size-4"
+            />
           </NAvatar>
         </div>
       </div>

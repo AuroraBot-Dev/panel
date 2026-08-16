@@ -7,6 +7,8 @@ import { BasicLayout, LockScreen, UserDropdown } from '@vben/layouts';
 import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
+import { $t } from '#/locales';
+import { router } from '#/router';
 import { useAuthStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
@@ -19,6 +21,15 @@ const { isDark } = usePreferences();
 const avatar = computed(
   () => userStore.userInfo?.avatar ?? preferences.app.defaultAvatar,
 );
+
+const userMenus = [
+  {
+    handler: () => router.push('/settings/chat-avatars'),
+    icon: 'lucide:smile',
+    text: $t('page.aurora.features.chatAvatars.title'),
+  },
+];
+
 async function handleLogout() {
   await authStore.logout(false);
 }
@@ -61,6 +72,7 @@ watch(
     <template #user-dropdown>
       <UserDropdown
         :avatar
+        :menus="userMenus"
         :text="userStore.userInfo?.realName"
         description="AuroraBot Operator"
         tag-text="Agent"

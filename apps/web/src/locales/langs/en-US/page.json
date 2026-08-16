@@ -243,6 +243,10 @@
         "description": "Browse extensions; phase one never executes installs.",
         "api": "plugins"
       },
+      "chatAvatars": {
+        "title": "Chat avatar settings",
+        "description": "Customize bot and user avatars in chat."
+      },
       "logs": {
         "title": "Runtime logs",
         "description": "Search logs by time, level, and component.",

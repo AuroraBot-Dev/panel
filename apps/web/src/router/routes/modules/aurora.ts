@@ -178,6 +178,15 @@ const routes: RouteRecordRaw[] = [
       ),
     ],
   },
+  {
+    name: 'ChatAvatarSettings',
+    path: '/settings/chat-avatars',
+    component: () => import('#/views/settings/chat-avatars.vue'),
+    meta: {
+      hideInMenu: true,
+      title: $t('page.aurora.features.chatAvatars.title'),
+    },
+  },
 ];
 
 export default routes;
