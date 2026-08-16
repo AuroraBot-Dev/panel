@@ -51,7 +51,11 @@ let disposed = false;
 
 function scrollBottom() {
   void nextTick(() => {
-    if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight;
+    requestAnimationFrame(() => {
+      if (chatBody.value) {
+        chatBody.value.scrollTop = chatBody.value.scrollHeight;
+      }
+    });
   });
 }
 
@@ -315,11 +319,12 @@ onBeforeUnmount(() => {
   height: 100%;
   min-height: 520px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 .chat-body {
   flex: 1;
-  min-height: 360px;
+  min-height: 0;
   padding: 24px 8px;
   margin-bottom: 16px;
   overflow-y: auto;
@@ -355,11 +360,6 @@ onBeforeUnmount(() => {
   color: hsl(var(--primary-foreground));
   background: hsl(var(--primary));
   border-color: transparent;
-  border-bottom-right-radius: 4px;
-}
-
-.chat-assistant .chat-bubble {
-  border-bottom-left-radius: 4px;
 }
 
 .chat-error .chat-bubble {
