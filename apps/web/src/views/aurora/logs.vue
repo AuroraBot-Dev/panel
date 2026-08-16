@@ -1,99 +1,132 @@
 <script lang="ts" setup>
-import type { DataTableColumns } from 'naive-ui';
+import type { OutputStreamItem } from '#/api';
 
-import type { JsonRecord, OutputStreamItem } from '#/api';
-
-import { onMounted, ref } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
-import {
-  NAlert,
-  NButton,
-  NCard,
-  NDataTable,
-  NDescriptions,
-  NDescriptionsItem,
-} from 'naive-ui';
+import { getActivities } from '#/api';
 
-import { getActivities, getConsoleLogStatus } from '#/api';
-import { $t } from '#/locales';
+interface TerminalLine {
+  at: string;
+  kind: 'error' | 'output' | 'system';
+  text: string;
+}
 
-const activities = ref<OutputStreamItem[]>([]);
+const lines = ref<TerminalLine[]>([]);
 const cursor = ref(0);
-const consoleStatus = ref<JsonRecord>({});
-const loading = ref(false);
-const error = ref('');
+const terminalBody = ref<HTMLElement>();
+let pollTimer: ReturnType<typeof setInterval> | undefined;
 
-const columns: DataTableColumns<OutputStreamItem> = [
-  { key: 'cursor', title: 'Cursor', width: 90 },
-  { key: 'kind', title: 'Kind', width: 100 },
-  { key: 'session_id', title: 'Session', ellipsis: { tooltip: true } },
-  { key: 'task_id', title: 'Task', ellipsis: { tooltip: true } },
-  { key: 'text', title: $t('page.aurora.panel.output') },
-  { key: 'at', title: $t('page.aurora.panel.createdAt') },
-];
-
-async function load(reset = false) {
-  loading.value = true;
-  error.value = '';
-  try {
-    if (reset) {
-      cursor.value = 0;
-      activities.value = [];
+function scrollBottom() {
+  void nextTick(() => {
+    if (terminalBody.value) {
+      terminalBody.value.scrollTop = terminalBody.value.scrollHeight;
     }
-    const [page, status] = await Promise.all([
-      getActivities(cursor.value, 64),
-      getConsoleLogStatus(),
-    ]);
-    const known = new Set(activities.value.map((item) => item.activity_id));
-    activities.value.push(
-      ...page.items.filter((item) => !known.has(item.activity_id)),
-    );
+  });
+}
+
+function formatTime(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleTimeString();
+}
+
+function appendOutput(item: OutputStreamItem) {
+  cursor.value = Math.max(cursor.value, item.cursor);
+  lines.value.push({
+    at: formatTime(item.at),
+    kind: item.kind === 'error' ? 'error' : 'output',
+    text: item.text,
+  });
+  scrollBottom();
+}
+
+async function loadHistory() {
+  try {
+    const page = await getActivities(0, 200);
+    page.items.forEach(appendOutput);
     cursor.value = page.next_cursor;
-    consoleStatus.value = status;
-  } catch (loadError) {
-    error.value = (loadError as Error).message;
-  } finally {
-    loading.value = false;
+  } catch {
+    // Global request handler reports transport errors.
   }
 }
 
-onMounted(() => load(true));
+async function pollActivities() {
+  try {
+    const page = await getActivities(cursor.value, 64);
+    page.items.forEach(appendOutput);
+    cursor.value = page.next_cursor;
+  } catch {
+    // Keep terminal log stream alive even when polling fails.
+  }
+}
+
+onMounted(async () => {
+  await loadHistory();
+  pollTimer = setInterval(pollActivities, 2000);
+});
+
+onBeforeUnmount(() => {
+  if (pollTimer) clearInterval(pollTimer);
+});
 </script>
 
 <template>
   <Page>
-    <NAlert v-if="error" class="mb-4" :title="error" type="error" />
-    <NAlert
-      class="mb-4"
-      :title="$t('page.aurora.panel.logs.consoleScope')"
-      type="info"
-    />
-    <NCard class="mb-4" title="Console status">
-      <NDescriptions :column="2" bordered size="small">
-        <NDescriptionsItem
-          v-for="(item, key) in consoleStatus"
-          :key="key"
-          :label="key"
-        >
-          {{ String(item) }}
-        </NDescriptionsItem>
-      </NDescriptions>
-    </NCard>
-    <NCard title="Output activities">
-      <NDataTable
-        :columns="columns"
-        :data="activities"
-        :loading="loading"
-        :pagination="false"
-        size="small"
-      />
-      <div class="mt-4 flex justify-end">
-        <NButton type="primary" :loading="loading" @click="load(false)">
-          {{ $t('page.aurora.panel.loadMore') }}
-        </NButton>
+    <div ref="terminalBody" class="terminal-body">
+      <div v-if="!lines.length" class="terminal-muted">AuroraBot 运行日志</div>
+      <div
+        v-for="(line, index) in lines"
+        :key="`${line.at}-${index}`"
+        class="terminal-line"
+        :class="`terminal-${line.kind}`"
+      >
+        <span class="terminal-time">{{ line.at }}</span>
+        <span class="terminal-text whitespace-pre-wrap">{{ line.text }}</span>
       </div>
-    </NCard>
+    </div>
   </Page>
 </template>
+
+<style scoped>
+.terminal-body {
+  height: calc(100vh - 180px);
+  min-height: 420px;
+  padding: 16px;
+  overflow-y: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #d4d4d4;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 8px;
+}
+
+.terminal-line {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.terminal-time {
+  flex: none;
+  color: #565f89;
+}
+
+.terminal-muted {
+  color: #565f89;
+}
+
+.terminal-output .terminal-text {
+  color: #d4d4d4;
+}
+
+.terminal-error .terminal-text {
+  color: #ff7b72;
+}
+
+.terminal-system .terminal-text {
+  color: #79c0ff;
+}
+</style>
