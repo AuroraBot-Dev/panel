@@ -5,6 +5,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+  OFFLINE_PANEL_TOKEN,
   operationRequest,
   panelApiUrl,
   panelRequestClient,
@@ -51,6 +52,18 @@ describe('panel API client', () => {
         responseReturn: 'body',
       }),
     ).resolves.toEqual({ authorization: 'Bearer session-token' });
+  });
+
+  it('does not send authenticated requests in offline mode', async () => {
+    const accessStore = useAccessStore();
+    accessStore.setAccessToken(OFFLINE_PANEL_TOKEN);
+    accessStore.setAccessTokenExpiresAt('2099-12-31T23:59:59Z');
+    mock.onGet('/ops/test').reply(200, { ok: true });
+
+    await expect(panelRequestClient.get('/ops/test')).rejects.toThrow(
+      'Offline mode: backend is not connected',
+    );
+    expect(mock.history.get).toHaveLength(0);
   });
 
   it('returns successful operation data and forwards request options', async () => {
