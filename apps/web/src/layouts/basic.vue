@@ -9,17 +9,21 @@ import { useAccessStore, useUserStore } from '@vben/stores';
 
 import { $t } from '#/locales';
 import { router } from '#/router';
-import { useAuthStore } from '#/store';
+import { useAuthStore, useChatAvatarStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
+const chatAvatar = useChatAvatarStore();
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
 
 const avatar = computed(
-  () => userStore.userInfo?.avatar ?? preferences.app.defaultAvatar,
+  () =>
+    chatAvatar.userUrl ||
+    userStore.userInfo?.avatar ||
+    preferences.app.defaultAvatar,
 );
 
 const userMenus = [

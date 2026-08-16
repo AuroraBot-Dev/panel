@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
@@ -7,6 +9,9 @@ import { NAvatar, NButton, NCard, NInput, NSpace, NText } from 'naive-ui';
 import { useChatAvatarStore } from '#/store';
 
 const chatAvatar = useChatAvatarStore();
+
+const botFileInput = ref<HTMLInputElement>();
+const userFileInput = ref<HTMLInputElement>();
 
 const botPresets = [
   'lucide:bot',
@@ -25,6 +30,74 @@ const userPresets = [
   'lucide:star',
   'lucide:flame',
 ];
+
+function cropToSquare(file: File, size = 256): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener('error', () => reject(new Error('读取图片失败')));
+    reader.addEventListener('load', () => {
+      const image = new Image();
+      image.addEventListener('error', () => reject(new Error('图片解析失败')));
+      image.addEventListener('load', () => {
+        const side = Math.min(image.width, image.height);
+        const sourceX = (image.width - side) / 2;
+        const sourceY = (image.height - side) / 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const context = canvas.getContext('2d');
+        if (!context) {
+          reject(new Error('无法创建画布'));
+          return;
+        }
+        context.drawImage(
+          image,
+          sourceX,
+          sourceY,
+          side,
+          side,
+          0,
+          0,
+          size,
+          size,
+        );
+        resolve(canvas.toDataURL('image/png'));
+      });
+      image.src = String(reader.result);
+    });
+    reader.readAsDataURL(file);
+  });
+}
+
+async function handleBotUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    chatAvatar.botUrl = await cropToSquare(file);
+  } finally {
+    input.value = '';
+  }
+}
+
+async function handleUserUpload(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  try {
+    chatAvatar.userUrl = await cropToSquare(file);
+  } finally {
+    input.value = '';
+  }
+}
+
+function triggerBotUpload() {
+  botFileInput.value?.click();
+}
+
+function triggerUserUpload() {
+  userFileInput.value?.click();
+}
 </script>
 
 <template>
@@ -58,6 +131,20 @@ const userPresets = [
               <IconifyIcon :icon="icon" class="size-5" />
             </template>
           </NButton>
+          <NButton @click="triggerBotUpload">上传图片</NButton>
+          <NButton
+            :disabled="!chatAvatar.botUrl"
+            @click="chatAvatar.botUrl = ''"
+          >
+            清除图片
+          </NButton>
+          <input
+            ref="botFileInput"
+            class="hidden"
+            type="file"
+            accept="image/*"
+            @change="handleBotUpload"
+          />
         </NSpace>
       </NCard>
 
@@ -89,6 +176,20 @@ const userPresets = [
               <IconifyIcon :icon="icon" class="size-5" />
             </template>
           </NButton>
+          <NButton @click="triggerUserUpload">上传图片</NButton>
+          <NButton
+            :disabled="!chatAvatar.userUrl"
+            @click="chatAvatar.userUrl = ''"
+          >
+            清除图片
+          </NButton>
+          <input
+            ref="userFileInput"
+            class="hidden"
+            type="file"
+            accept="image/*"
+            @change="handleUserUpload"
+          />
         </NSpace>
       </NCard>
 
