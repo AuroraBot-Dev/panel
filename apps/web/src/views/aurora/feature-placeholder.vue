@@ -4,7 +4,7 @@ import { computed } from 'vue';
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { NAlert, NCard, NDescriptions, NTag } from 'naive-ui';
+import { NAlert, NCard, NDescriptions } from 'naive-ui';
 
 import { $t } from '#/locales';
 
@@ -26,14 +26,7 @@ const details = computed(() => [
 </script>
 
 <template>
-  <Page
-    :description="$t(`${prefix}.description`)"
-    :title="$t(`${prefix}.title`)"
-  >
-    <template #extra>
-      <NTag type="warning">{{ $t('page.aurora.placeholder.badge') }}</NTag>
-    </template>
-
+  <Page>
     <NCard class="max-w-4xl" :title="$t(`${prefix}.title`)" bordered>
       <NDescriptions :column="1" bordered size="small">
         <NDescriptionsItem

@@ -10,7 +10,13 @@ import { resetAllStores, useAccessStore, useUserStore } from '@vben/stores';
 import { defineStore } from 'pinia';
 
 import { notification } from '#/adapter/naive';
-import { loginApi, logoutApi } from '#/api';
+import {
+  isOfflinePanelToken,
+  loginApi,
+  logoutApi,
+  OFFLINE_PANEL_EXPIRES_AT,
+  OFFLINE_PANEL_TOKEN,
+} from '#/api';
 import { $t } from '#/locales';
 
 const OWNER_INFO: UserInfo = {
@@ -39,9 +45,14 @@ export const useAuthStore = defineStore('auth', () => {
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
-      const session = await loginApi({
-        token_login: String(params.token_login || '').trim(),
-      });
+      const rawToken = String(params.token_login || '').trim();
+      const session = isOfflinePanelToken(rawToken)
+        ? {
+            created_at: new Date().toISOString(),
+            expires_at: OFFLINE_PANEL_EXPIRES_AT,
+            token: OFFLINE_PANEL_TOKEN,
+          }
+        : await loginApi({ token_login: rawToken });
       if (!session.token) return { userInfo };
 
       accessStore.setAccessToken(session.token);
@@ -70,7 +81,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout(redirect = true) {
-    if (accessStore.accessToken) {
+    if (
+      accessStore.accessToken &&
+      !isOfflinePanelToken(accessStore.accessToken)
+    ) {
       try {
         await logoutApi();
       } catch {

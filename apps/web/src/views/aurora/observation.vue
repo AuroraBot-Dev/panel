@@ -23,7 +23,6 @@ import {
   NInput,
   NInputNumber,
   NSelect,
-  NSpace,
   NTabPane,
   NTabs,
   NTag,
@@ -129,6 +128,65 @@ const eventColumns: DataTableColumns<CausalEvent> = [
   { key: 'created_at', title: $t('page.aurora.panel.createdAt') },
 ];
 
+const supervisionColumns: DataTableColumns<
+  TaskDetail['supervision_tree'][number]
+> = [
+  { key: 'agent_id', title: 'Agent ID', ellipsis: { tooltip: true } },
+  { key: 'profile_id', title: 'Profile' },
+  {
+    key: 'status',
+    title: $t('page.aurora.panel.status'),
+    width: 110,
+    render: (row) =>
+      h(NTag, { type: 'default' }, { default: () => row.status }),
+  },
+  { key: 'depth', title: 'Depth', width: 80 },
+  { key: 'parent_agent_id', title: 'Parent', ellipsis: { tooltip: true } },
+  {
+    key: 'children',
+    title: 'Children',
+    width: 90,
+    render: (row) => String(row.children?.length ?? 0),
+  },
+  {
+    key: 'last_summary',
+    title: $t('page.aurora.panel.summary'),
+    ellipsis: { tooltip: true },
+  },
+];
+
+const childColumns: DataTableColumns<AgentTransport> = [
+  { key: 'agent_id', title: 'Agent ID', ellipsis: { tooltip: true } },
+  { key: 'profile_id', title: 'Profile' },
+  {
+    key: 'status',
+    title: $t('page.aurora.panel.status'),
+    width: 110,
+    render: (row) =>
+      h(NTag, { type: 'default' }, { default: () => row.status }),
+  },
+  { key: 'depth', title: 'Depth', width: 80 },
+  {
+    key: 'last_summary',
+    title: $t('page.aurora.panel.summary'),
+    ellipsis: { tooltip: true },
+  },
+];
+
+const messageColumns: DataTableColumns<AgentDetail['messages'][number]> = [
+  { key: 'message_id', title: 'Message ID', ellipsis: { tooltip: true } },
+  { key: 'type', title: 'Type' },
+  {
+    key: 'status',
+    title: $t('page.aurora.panel.status'),
+    width: 110,
+    render: (row) =>
+      h(NTag, { type: 'default' }, { default: () => row.status }),
+  },
+  { key: 'task_id', title: 'Task', ellipsis: { tooltip: true } },
+  { key: 'created_at', title: $t('page.aurora.panel.createdAt') },
+];
+
 function compact<T extends Record<string, unknown>>(value: T) {
   return Object.fromEntries(
     Object.entries(value).filter(
@@ -195,31 +253,13 @@ async function showAgent(agentId: string) {
   drawerOpen.value = true;
 }
 
-function reload() {
-  if (activeTab.value === 'agents') return loadAgents();
-  if (activeTab.value === 'events') return loadEvents();
-  return loadTasks();
-}
-
 onMounted(async () => {
   await Promise.all([loadTasks(), loadAgents(), loadEvents()]);
 });
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.observation.description')"
-    :title="$t('page.aurora.features.observation.title')"
-  >
-    <template #extra>
-      <NSpace>
-        <NInputNumber v-model:value="limit" :max="500" :min="1" />
-        <NButton :loading="loading" @click="reload">
-          {{ $t('page.aurora.panel.refresh') }}
-        </NButton>
-      </NSpace>
-    </template>
-
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NCard>
       <NTabs v-model:value="activeTab">
@@ -312,17 +352,29 @@ onMounted(async () => {
           </NDescriptionsItem>
         </NDescriptions>
         <h3 class="mt-5 font-semibold">Budget</h3>
-        <pre class="json-preview">{{
-          JSON.stringify(taskDetail.budget, null, 2)
-        }}</pre>
+        <NDescriptions :column="2" bordered size="small">
+          <NDescriptionsItem
+            v-for="(item, key) in taskDetail.budget"
+            :key="key"
+            :label="key"
+          >
+            {{ String(item) }}
+          </NDescriptionsItem>
+        </NDescriptions>
         <h3 class="mt-5 font-semibold">Supervision tree</h3>
-        <pre class="json-preview">{{
-          JSON.stringify(taskDetail.supervision_tree, null, 2)
-        }}</pre>
+        <NDataTable
+          :columns="supervisionColumns"
+          :data="taskDetail.supervision_tree"
+          :pagination="false"
+          size="small"
+        />
         <h3 class="mt-5 font-semibold">Causal events</h3>
-        <pre class="json-preview">{{
-          JSON.stringify(taskDetail.events, null, 2)
-        }}</pre>
+        <NDataTable
+          :columns="eventColumns"
+          :data="taskDetail.events"
+          :pagination="false"
+          size="small"
+        />
       </template>
       <template v-else-if="agentDetail">
         <NDescriptions :column="1" bordered size="small">
@@ -340,25 +392,22 @@ onMounted(async () => {
           </NDescriptionsItem>
         </NDescriptions>
         <h3 class="mt-5 font-semibold">Children</h3>
-        <pre class="json-preview">{{
-          JSON.stringify(agentDetail.children, null, 2)
-        }}</pre>
+        <NDataTable
+          :columns="childColumns"
+          :data="agentDetail.children"
+          :pagination="false"
+          size="small"
+        />
         <h3 class="mt-5 font-semibold">Messages</h3>
-        <pre class="json-preview">{{
-          JSON.stringify(agentDetail.messages, null, 2)
-        }}</pre>
+        <NDataTable
+          :columns="messageColumns"
+          :data="agentDetail.messages"
+          :pagination="false"
+          size="small"
+        />
       </template>
     </NDrawer>
   </Page>
 </template>
 
-<style scoped>
-.json-preview {
-  max-height: 360px;
-  padding: 12px;
-  overflow: auto;
-  font-size: 12px;
-  background: hsl(var(--muted));
-  border-radius: 6px;
-}
-</style>
+<style scoped></style>

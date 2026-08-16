@@ -8,21 +8,24 @@ import type {
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { useAccessStore } from '@vben/stores';
 
-import { NAlert, NButton, NCard, NInput, NSpace, NTag } from 'naive-ui';
+import { NAlert, NAvatar, NButton, NInput, NTag } from 'naive-ui';
 
 import { message } from '#/adapter/naive';
 import {
   downloadAttachment,
   getActivities,
   getMessages,
+  isOfflinePanelToken,
   PANEL_OWNER,
   panelWebSocketUrl,
   sendMessage,
   uploadAttachment,
 } from '#/api';
 import { $t } from '#/locales';
+import { useChatAvatarStore } from '#/store';
 
 interface ChatLine {
   at: string;
@@ -32,6 +35,7 @@ interface ChatLine {
 }
 
 const accessStore = useAccessStore();
+const chatAvatar = useChatAvatarStore();
 const lines = ref<ChatLine[]>([]);
 const attachments = ref<AttachmentRecord[]>([]);
 const text = ref('');
@@ -40,6 +44,7 @@ const uploading = ref(false);
 const connected = ref(false);
 const error = ref('');
 const chatBody = ref<HTMLElement>();
+const fileInput = ref<HTMLInputElement>();
 const seenActivities = new Set<string>();
 let cursor = 0;
 let socket: undefined | WebSocket;
@@ -47,9 +52,17 @@ let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 let disposed = false;
 
+function avatarIcon(line: ChatLine) {
+  return line.kind === 'user' ? chatAvatar.userIcon : chatAvatar.botIcon;
+}
+
 function scrollBottom() {
   void nextTick(() => {
-    if (chatBody.value) chatBody.value.scrollTop = chatBody.value.scrollHeight;
+    requestAnimationFrame(() => {
+      if (chatBody.value) {
+        chatBody.value.scrollTop = chatBody.value.scrollHeight;
+      }
+    });
   });
 }
 
@@ -108,7 +121,13 @@ async function pollActivities() {
 }
 
 function connect() {
-  if (disposed || !accessStore.accessToken) return;
+  if (
+    disposed ||
+    !accessStore.accessToken ||
+    isOfflinePanelToken(accessStore.accessToken)
+  ) {
+    return;
+  }
   socket?.close();
   socket = new WebSocket(panelWebSocketUrl(accessStore.accessToken));
   socket.addEventListener('open', () => {
@@ -161,6 +180,10 @@ async function submit() {
   }
 }
 
+function triggerFileInput() {
+  fileInput.value?.click();
+}
+
 async function selectFile(event: Event) {
   const input = event.target as HTMLInputElement;
   const file = input.files?.[0];
@@ -205,17 +228,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.chatConsole.description')"
-    :title="$t('page.aurora.features.chatConsole.title')"
-  >
-    <template #extra>
-      <NTag :type="connected ? 'success' : 'warning'">
-        {{ connected ? 'WebSocket' : $t('page.aurora.panel.chat.polling') }}
-      </NTag>
-    </template>
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
-    <NCard class="chat-card">
+    <div class="chat-card">
       <div ref="chatBody" class="chat-body">
         <div
           v-for="line in lines"
@@ -223,109 +238,199 @@ onBeforeUnmount(() => {
           class="chat-line"
           :class="[`chat-${line.kind}`]"
         >
+          <NAvatar
+            v-if="line.kind !== 'user'"
+            class="chat-avatar"
+            :size="32"
+            round
+          >
+            <IconifyIcon :icon="avatarIcon(line)" class="size-4" />
+          </NAvatar>
           <div class="chat-bubble">
             <small>{{ line.kind }} · {{ line.at }}</small>
             <div class="whitespace-pre-wrap">{{ line.text }}</div>
           </div>
+          <NAvatar
+            v-if="line.kind === 'user'"
+            class="chat-avatar"
+            :size="32"
+            round
+          >
+            <IconifyIcon :icon="avatarIcon(line)" class="size-4" />
+          </NAvatar>
         </div>
       </div>
 
-      <div v-if="attachments.length" class="mb-3 flex flex-wrap gap-2">
-        <NTag
-          v-for="item in attachments"
-          :key="item.attachment_id"
-          closable
-          @close="
-            attachments = attachments.filter(
-              (value) => value.attachment_id !== item.attachment_id,
-            )
-          "
-        >
-          <button type="button" @click="download(item)">
-            {{ item.name }} · {{ item.size }} B
-          </button>
-        </NTag>
-      </div>
-
-      <NInput
-        v-model:value="text"
-        type="textarea"
-        :autosize="{ minRows: 3, maxRows: 8 }"
-        :placeholder="$t('page.aurora.panel.chat.placeholder')"
-        @keydown.ctrl.enter.prevent="submit"
-      />
-      <div class="mt-3 flex justify-between">
-        <label class="cursor-pointer">
-          {{
-            uploading
-              ? $t('page.aurora.panel.loading')
-              : $t('page.aurora.panel.chat.attachment')
-          }}
+      <div class="chat-input-float">
+        <div v-if="attachments.length" class="mb-3 flex flex-wrap gap-2">
+          <NTag
+            v-for="item in attachments"
+            :key="item.attachment_id"
+            closable
+            @close="
+              attachments = attachments.filter(
+                (value) => value.attachment_id !== item.attachment_id,
+              )
+            "
+          >
+            <button type="button" @click="download(item)">
+              {{ item.name }} · {{ item.size }} B
+            </button>
+          </NTag>
+        </div>
+        <div class="chat-input-box">
+          <NInput
+            v-model:value="text"
+            type="textarea"
+            :autosize="{ minRows: 3, maxRows: 8 }"
+            :bordered="false"
+            :placeholder="$t('page.aurora.panel.chat.placeholder')"
+            @keydown.ctrl.enter.prevent="submit"
+          />
+          <div class="chat-input-toolbar">
+            <NButton
+              circle
+              size="medium"
+              :disabled="uploading"
+              type="default"
+              @click="triggerFileInput"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:plus" class="size-5" />
+              </template>
+            </NButton>
+            <p class="chat-ai-hint">
+              {{ $t('page.aurora.panel.chat.aiHint') }}
+            </p>
+            <NButton
+              circle
+              size="medium"
+              type="primary"
+              :loading="sending"
+              @click="submit"
+            >
+              <template #icon>
+                <IconifyIcon icon="lucide:arrow-up" class="size-5" />
+              </template>
+            </NButton>
+          </div>
           <input
+            ref="fileInput"
             class="hidden"
             type="file"
             :disabled="uploading"
             @change="selectFile"
           />
-        </label>
-        <NSpace>
-          <NButton @click="loadHistory">
-            {{ $t('page.aurora.panel.refresh') }}
-          </NButton>
-          <NButton type="primary" :loading="sending" @click="submit">
-            {{ $t('page.aurora.panel.chat.send') }}
-          </NButton>
-        </NSpace>
+        </div>
       </div>
-    </NCard>
+    </div>
   </Page>
 </template>
 
 <style scoped>
 .chat-card {
-  max-width: 1100px;
-  margin: 0 auto;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 85px);
+  min-height: 420px;
+  max-height: calc(100vh - 85px);
+  margin: 0;
+  overflow: hidden;
 }
 
 .chat-body {
-  height: 55vh;
-  min-height: 360px;
-  padding: 16px;
-  margin-bottom: 16px;
+  height: 100%;
+  padding: 24px 8px 180px;
   overflow-y: auto;
-  background: hsl(var(--muted));
-  border-radius: 8px;
 }
 
 .chat-line {
   display: flex;
-  margin-bottom: 12px;
+  gap: 8px;
+  align-items: flex-start;
+  max-width: 100%;
+  margin: 0 auto 16px;
 }
 
 .chat-user {
   justify-content: flex-end;
 }
 
+.chat-avatar {
+  flex: none;
+}
+
 .chat-bubble {
-  max-width: min(760px, 85%);
+  max-width: 85%;
   padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.7;
   background: hsl(var(--card));
-  border-radius: 10px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 8%);
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
 }
 
 .chat-user .chat-bubble {
   color: hsl(var(--primary-foreground));
   background: hsl(var(--primary));
+  border-color: transparent;
 }
 
 .chat-error .chat-bubble {
   color: hsl(var(--destructive));
+  border-color: hsl(var(--destructive) / 30%);
 }
 
 .chat-bubble small {
   display: block;
   margin-bottom: 4px;
+  font-size: 11px;
   opacity: 0.65;
+}
+
+.chat-input-float {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  padding: 12px 16px 8px;
+}
+
+.chat-input-box {
+  width: 100%;
+  max-width: 760px;
+  padding: 8px;
+  margin: 0 auto;
+  background: color-mix(in srgb, hsl(var(--card)) 80%, transparent);
+  border: 1px solid hsl(var(--border));
+  border-radius: 24px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 8%);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.2s;
+}
+
+.chat-input-box:focus-within {
+  border-color: hsl(var(--primary));
+}
+
+.chat-input-box :deep(.n-input) {
+  background: transparent;
+}
+
+.chat-input-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 4px;
+}
+
+.chat-ai-hint {
+  flex: 1;
+  margin: 0 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: hsl(var(--muted-foreground));
+  text-align: center;
 }
 </style>

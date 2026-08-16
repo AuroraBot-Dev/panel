@@ -15,7 +15,6 @@ import { Page } from '@vben/common-ui';
 
 import {
   NAlert,
-  NButton,
   NCard,
   NDataTable,
   NDescriptions,
@@ -129,16 +128,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.panel.overview.description')"
-    :title="$t('page.aurora.dashboard.title')"
-  >
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
-
+  <Page>
     <NAlert
       v-if="failedSources.length"
       class="mb-4"

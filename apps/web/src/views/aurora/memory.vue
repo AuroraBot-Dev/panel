@@ -95,10 +95,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.memory.description')"
-    :title="$t('page.aurora.features.memory.title')"
-  >
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <section class="mb-4 grid grid-cols-2 gap-4 md:grid-cols-4">
       <NCard>

@@ -7,6 +7,7 @@ import { Page } from '@vben/common-ui';
 
 import { NAlert, NButton, NCard, NInput, NSelect } from 'naive-ui';
 
+import { message } from '#/adapter/naive';
 import { getAgentProfiles, getAiRoles, getPrompt } from '#/api';
 import { $t } from '#/locales';
 
@@ -43,6 +44,12 @@ async function load() {
   }
 }
 
+async function copyPrompt() {
+  if (!prompt.value?.text) return;
+  await navigator.clipboard.writeText(prompt.value.text);
+  message.success($t('page.aurora.panel.prompts.copied'));
+}
+
 onMounted(async () => {
   [profiles.value, aiRoles.value] = await Promise.all([
     getAgentProfiles(),
@@ -53,10 +60,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.prompts.description')"
-    :title="$t('page.aurora.features.prompts.title')"
-  >
+  <Page>
     <NCard>
       <div class="mb-4 flex w-full max-w-3xl gap-2">
         <NSelect
@@ -75,6 +79,11 @@ onMounted(async () => {
         </NButton>
       </div>
       <NAlert v-if="error" class="mb-4" :title="error" type="error" />
+      <div class="mb-2 flex justify-end">
+        <NButton size="small" :disabled="!prompt?.text" @click="copyPrompt">
+          {{ $t('page.aurora.panel.prompts.copy') }}
+        </NButton>
+      </div>
       <NInput
         type="textarea"
         :value="prompt?.text ?? ''"

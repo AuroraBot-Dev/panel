@@ -1,24 +1,44 @@
 <script lang="ts" setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
 import { useWatermark } from '@vben/hooks';
+import { IconifyIcon } from '@vben/icons';
 import { BasicLayout, LockScreen, UserDropdown } from '@vben/layouts';
 import { preferences, usePreferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
 
-import { useAuthStore } from '#/store';
+import ChatAvatarSettingsModal from '#/components/aurora/chat-avatar-settings-modal.vue';
+import { $t } from '#/locales';
+import { useAuthStore, useChatAvatarStore } from '#/store';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
+const chatAvatar = useChatAvatarStore();
+const showChatAvatarSettings = ref(false);
 const { destroyWatermark, updateWatermark } = useWatermark();
 const { isDark } = usePreferences();
 
-const avatar = computed(
-  () => userStore.userInfo?.avatar ?? preferences.app.defaultAvatar,
+const displayName = computed(
+  () => userStore.userInfo?.realName || userStore.userInfo?.username || '',
 );
+
+const avatar = computed(
+  () => userStore.userInfo?.avatar || preferences.app.defaultAvatar,
+);
+
+const userMenus = [
+  {
+    handler: () => {
+      showChatAvatarSettings.value = true;
+    },
+    icon: 'lucide:settings',
+    text: $t('page.aurora.features.chatAvatars.title'),
+  },
+];
+
 async function handleLogout() {
   await authStore.logout(false);
 }
@@ -54,19 +74,61 @@ watch(
 <template>
   <BasicLayout
     :avatar
-    :text="userStore.userInfo?.realName"
+    :text="displayName"
     @clear-preferences-and-logout="handleLogout"
     @logout="handleLogout"
   >
     <template #user-dropdown>
       <UserDropdown
         :avatar
-        :text="userStore.userInfo?.realName"
-        description="AuroraBot Operator"
-        tag-text="Agent"
+        :avatar-icon="chatAvatar.userIcon"
+        :menus="userMenus"
+        :text="displayName"
         @clear-preferences-and-logout="handleLogout"
         @logout="handleLogout"
-      />
+      >
+        <template #label>
+          <div class="flex w-full flex-col gap-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"
+              >
+                <IconifyIcon :icon="chatAvatar.userIcon" class="size-5" />
+              </div>
+              <div class="min-w-0">
+                <div class="text-sm font-medium text-foreground">
+                  {{ displayName }}
+                </div>
+                <div class="text-xs font-normal text-muted-foreground">
+                  {{ $t('page.aurora.features.chatAvatars.operator') }}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <div
+                class="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted"
+              >
+                <IconifyIcon :icon="chatAvatar.botIcon" class="size-5" />
+              </div>
+              <div class="min-w-0">
+                <div
+                  class="flex items-center text-sm font-medium text-foreground"
+                >
+                  {{ $t('page.aurora.features.chatAvatars.botName') }}
+                  <span
+                    class="ml-2 w-fit shrink-0 rounded-full border border-transparent bg-secondary px-2 py-0.5 text-xs font-medium whitespace-nowrap text-green-400"
+                  >
+                    Agent
+                  </span>
+                </div>
+                <div class="text-xs font-normal text-muted-foreground">
+                  {{ $t('page.aurora.features.chatAvatars.botDesc') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </UserDropdown>
     </template>
     <template #extra>
       <AuthenticationLoginExpiredModal
@@ -80,4 +142,5 @@ watch(
       <LockScreen :avatar @to-login="handleLogout" />
     </template>
   </BasicLayout>
+  <ChatAvatarSettingsModal v-model:show="showChatAvatarSettings" />
 </template>

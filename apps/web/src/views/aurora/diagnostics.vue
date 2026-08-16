@@ -139,15 +139,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.diagnostics.description')"
-    :title="$t('page.aurora.features.diagnostics.title')"
-  >
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NAlert
       v-if="unknownOperations.length"

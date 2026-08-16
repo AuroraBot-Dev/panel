@@ -9,7 +9,6 @@ import { Page } from '@vben/common-ui';
 
 import {
   NAlert,
-  NButton,
   NCard,
   NDataTable,
   NDescriptions,
@@ -19,8 +18,7 @@ import {
 } from 'naive-ui';
 
 import { getAgentProfiles, getConfigSnapshot } from '#/api';
-import JsonView from '#/components/aurora/json-view.vue';
-import { $t } from '#/locales';
+import ConfigSection from '#/components/aurora/config-section.vue';
 
 const profiles = ref<AgentProfile[]>([]);
 const snapshot = ref<ConfigSnapshot>();
@@ -80,15 +78,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.agentSettings.description')"
-    :title="$t('page.aurora.features.agentSettings.title')"
-  >
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NCard class="mb-4" title="Runtime profile">
       <NDescriptions :column="2" bordered size="small">
@@ -111,7 +101,10 @@ onMounted(load);
           :name="section"
           :tab="section"
         >
-          <JsonView :value="snapshot?.[section as keyof ConfigSnapshot]" />
+          <ConfigSection
+            :section="section"
+            :value="snapshot?.[section as keyof ConfigSnapshot]"
+          />
         </NTabPane>
       </NTabs>
     </NCard>

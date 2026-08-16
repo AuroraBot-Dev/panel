@@ -9,7 +9,7 @@
     },
     "nav": {
       "overview": "Overview",
-      "observation": "Observation",
+      "observation": "観察",
       "chat": "Chat",
       "configuration": "Configuration",
       "resources": "Resources",
@@ -125,7 +125,7 @@
         "attachment": "Upload attachment",
         "uploaded": "Attachment uploaded",
         "send": "Send",
-        "aiHint": "AI-generated content may be inaccurate"
+        "aiHint": "AI生成の内容にはご注意ください"
       },
       "conversations": {
         "description": "Inspect message projections, causal events, and model outputs by session ID."
@@ -171,7 +171,7 @@
     },
     "features": {
       "observation": {
-        "title": "Observation",
+        "title": "観察",
         "description": "Component health, events, alerts, and runtime status.",
         "api": "agents / metrics / logs"
       },
@@ -241,11 +241,11 @@
         "api": "plugins"
       },
       "chatAvatars": {
-        "title": "Chat avatar settings",
-        "description": "Customize bot and user avatar icons in chat.",
+        "title": "チャットアバター設定",
+        "description": "チャットのBotとユーザーアバターアイコンをカスタマイズします。",
         "botName": "AuroraBot",
-        "botDesc": "AI assistant in chat",
-        "operator": "Panel operator"
+        "botDesc": "チャットのAIアシスタント",
+        "operator": "パネルオペレーター"
       },
       "logs": {
         "title": "Runtime logs",

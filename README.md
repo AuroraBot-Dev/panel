@@ -25,6 +25,8 @@ pnpm dev
 
 开发服务器通过 Vite 将 `/api`、`/healthz` 和 WebSocket 转发到 AuroraBot。登录时使用后端生成在 `data/ops/Token.txt` 中的 bootstrap token。
 
+未启动后端时，可在登录页输入特殊 Token `local` 进入离线调试模式。该模式只在前端建立本地会话，不会连接后端服务，便于单独调试面板界面。
+
 跨域部署可通过 `VITE_GLOB_API_URL` 设置 API 地址，并通过 `VITE_GLOB_WS_URL` 显式设置 WebSocket 地址。
 
 ## 项目结构

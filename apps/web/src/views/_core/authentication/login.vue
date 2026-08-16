@@ -1,22 +1,16 @@
 <script lang="ts" setup>
 import type { VbenFormSchema } from '@vben/common-ui';
 
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 
 import { AuthenticationLogin, z } from '@vben/common-ui';
 
-import { NAlert, NTag } from 'naive-ui';
-
-import { getApiHealth } from '#/api';
 import { $t } from '#/locales';
 import { useAuthStore } from '#/store';
 
 defineOptions({ name: 'Login' });
 
 const authStore = useAuthStore();
-const healthLoading = ref(true);
-const healthProfile = ref('');
-const backendOnline = ref(false);
 
 const formSchema = computed((): VbenFormSchema[] => [
   {
@@ -33,18 +27,6 @@ const formSchema = computed((): VbenFormSchema[] => [
       .min(1, { message: $t('page.aurora.panel.auth.tokenRequired') }),
   },
 ]);
-
-onMounted(async () => {
-  try {
-    const health = await getApiHealth();
-    backendOnline.value = health.ok;
-    healthProfile.value = health.profile;
-  } catch {
-    backendOnline.value = false;
-  } finally {
-    healthLoading.value = false;
-  }
-});
 </script>
 
 <template>
@@ -59,25 +41,6 @@ onMounted(async () => {
     :show-third-party-login="false"
     @submit="authStore.authLogin"
   >
-    <template #subTitle>
-      <div class="space-y-3">
-        <div>{{ $t('page.aurora.panel.auth.help') }}</div>
-        <NAlert
-          :title="
-            backendOnline
-              ? $t('page.aurora.panel.auth.online')
-              : $t('page.aurora.panel.auth.offline')
-          "
-          :type="backendOnline ? 'success' : 'warning'"
-        >
-          <template v-if="healthLoading">
-            {{ $t('page.aurora.panel.loading') }}
-          </template>
-          <template v-else-if="healthProfile">
-            <NTag>{{ healthProfile }}</NTag>
-          </template>
-        </NAlert>
-      </div>
-    </template>
+    <template #subTitle></template>
   </AuthenticationLogin>
 </template>

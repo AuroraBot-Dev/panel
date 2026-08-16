@@ -9,6 +9,7 @@ import { SUPPORT_LANGUAGES } from '@vben/constants';
 import { useHoverToggle, useRefresh } from '@vben/hooks';
 import {
   createIconifyIcon,
+  IconifyIcon,
   Languages,
   LockKeyhole,
   LogOut,
@@ -56,6 +57,10 @@ interface Props {
    */
   avatar?: string;
   /**
+   * 图标头像（图标名，优先于 avatar 渲染）
+   */
+  avatarIcon?: string;
+  /**
    * @zh_CN 描述
    */
   description?: string;
@@ -88,6 +93,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<Props>(), {
   avatar: '',
+  avatarIcon: '',
   description: '',
   menus: () => [],
   tagText: '',
@@ -282,7 +288,10 @@ function handleLanguageToggleSelect(event?: Event) {
   event?.preventDefault();
   showLanguageList.value = !showLanguageList.value;
 }
-async function handleLocaleChange(event: Event, value: 'en-US' | 'zh-CN') {
+async function handleLocaleChange(
+  event: Event,
+  value: 'en-US' | 'ja-JP' | 'zh-CN',
+) {
   // 阻止默认关闭，让用户能继续看到选择结果；选完手动收起
   event.preventDefault();
   updatePreferences({ app: { locale: value } });
@@ -361,40 +370,58 @@ if (preferences.shortcutKeys.enable) {
     <DropdownMenuTrigger ref="refTrigger" :disabled="props.trigger === 'hover'">
       <div class="mr-2 ml-1 cursor-pointer rounded-full p-1.5 hover:bg-accent">
         <div class="flex-center hover:text-accent-foreground">
-          <VbenAvatar :alt="text" :src="avatar" class="size-8" dot />
+          <VbenAvatar
+            v-if="!avatarIcon"
+            :alt="text"
+            :src="avatar"
+            class="size-8"
+            dot
+          />
+          <div
+            v-else
+            class="relative flex size-8 items-center justify-center rounded-full bg-muted"
+          >
+            <IconifyIcon :icon="avatarIcon" class="size-4" />
+            <span
+              class="border-background absolute right-0 bottom-0 size-3 rounded-full border-2 bg-green-500"
+            >
+            </span>
+          </div>
         </div>
       </div>
     </DropdownMenuTrigger>
     <DropdownMenuContent class="mr-2 min-w-60 p-0 pb-1">
       <div ref="refContent">
         <DropdownMenuLabel class="flex items-center p-3">
-          <VbenAvatar
-            :alt="text"
-            :src="avatar"
-            class="size-12"
-            dot
-            dot-class="bottom-0 right-1 border-2 size-4 bg-green-500"
-          />
-          <div class="ml-2 w-full">
-            <div
-              v-if="tagText || text || $slots.tagText"
-              class="mb-1 flex items-center text-sm font-medium text-foreground"
-            >
-              {{ text }}
-              <slot name="tagText">
-                <Badge
-                  v-if="tagText"
-                  variant="secondary"
-                  class="ml-2 text-green-400"
-                >
-                  {{ tagText }}
-                </Badge>
-              </slot>
+          <slot name="label">
+            <VbenAvatar
+              :alt="text"
+              :src="avatar"
+              class="size-12"
+              dot
+              dot-class="bottom-0 right-1 border-2 size-4 bg-green-500"
+            />
+            <div class="ml-2 w-full">
+              <div
+                v-if="tagText || text || $slots.tagText"
+                class="mb-1 flex items-center text-sm font-medium text-foreground"
+              >
+                {{ text }}
+                <slot name="tagText">
+                  <Badge
+                    v-if="tagText"
+                    variant="secondary"
+                    class="ml-2 text-green-400"
+                  >
+                    {{ tagText }}
+                  </Badge>
+                </slot>
+              </div>
+              <div class="text-xs font-normal text-muted-foreground">
+                {{ description }}
+              </div>
             </div>
-            <div class="text-xs font-normal text-muted-foreground">
-              {{ description }}
-            </div>
-          </div>
+          </slot>
         </DropdownMenuLabel>
         <DropdownMenuSeparator v-if="menus?.length" />
         <DropdownMenuItem

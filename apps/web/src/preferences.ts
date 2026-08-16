@@ -1,14 +1,4 @@
-import {
-  defineOverridesPreferences,
-  definePreferencesExtension,
-} from '@vben/preferences';
-
-interface WebNaivePreferencesExtension {
-  defaultTableSize: number;
-  enableFormFullscreen: boolean;
-  reportTitle: string;
-  tenantMode: 'multi' | 'single';
-}
+import { defineOverridesPreferences } from '@vben/preferences';
 
 /**
  * @description 项目配置文件
@@ -23,6 +13,7 @@ export const overridesPreferences = defineOverridesPreferences({
       'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=AuroraBot',
     defaultHomePath: '/overview',
     enableCheckUpdates: false,
+    layout: 'header-sidebar-nav',
     name: import.meta.env.VITE_APP_TITLE,
   },
   copyright: {
@@ -35,53 +26,36 @@ export const overridesPreferences = defineOverridesPreferences({
     showText: true,
     source: '/logo.svg',
   },
-});
-
-export const preferencesExtension =
-  definePreferencesExtension<WebNaivePreferencesExtension>({
-    tabLabel: 'preferences.naive.tabLabel',
-    title: 'preferences.naive.title',
-    fields: [
-      {
-        component: 'switch',
-        defaultValue: true,
-        key: 'enableFormFullscreen',
-        label: 'preferences.naive.fields.enableFormFullscreen.label',
-        tip: 'preferences.naive.fields.enableFormFullscreen.tip',
-      },
-      {
-        component: 'select',
-        defaultValue: 'single',
-        key: 'tenantMode',
-        label: 'preferences.naive.fields.tenantMode.label',
-        options: [
-          {
-            label: 'preferences.naive.fields.tenantMode.options.single.label',
-            value: 'single',
-          },
-          {
-            label: 'preferences.naive.fields.tenantMode.options.multi.label',
-            value: 'multi',
-          },
-        ],
-      },
-      {
-        component: 'number',
-        componentProps: {
-          max: 200,
-          min: 10,
-          step: 10,
-        },
-        defaultValue: 20,
-        key: 'defaultTableSize',
-        label: 'preferences.naive.fields.defaultTableSize.label',
-      },
-      {
-        component: 'input',
-        defaultValue: '',
-        key: 'reportTitle',
-        label: 'preferences.naive.fields.reportTitle.label',
-        placeholder: 'preferences.naive.fields.reportTitle.placeholder',
-      },
+  sidebar: {
+    collapsed: true,
+    collapsedButton: true,
+    fixedButton: true,
+  },
+  tabbar: {
+    enable: false,
+  },
+  theme: {
+    mode: 'auto',
+    radius: '0.75',
+  },
+  transition: {
+    name: 'fade',
+  },
+  widget: {
+    logoutButtonPosition: 'none',
+    lockScreenButtonPosition: 'none',
+    notificationButtonPosition: 'none',
+    order: [
+      'globalSearch',
+      'preferences',
+      'themeToggle',
+      'languageToggle',
+      'timezone',
+      'fullscreen',
+      'refresh',
+      'lockScreenBtn',
+      'logoutBtn',
+      'notification',
     ],
-  });
+  },
+});

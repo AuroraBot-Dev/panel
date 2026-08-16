@@ -9,7 +9,6 @@ import { Page } from '@vben/common-ui';
 
 import {
   NAlert,
-  NButton,
   NCard,
   NDataTable,
   NStatistic,
@@ -18,7 +17,6 @@ import {
 } from 'naive-ui';
 
 import { getAiCost, getAiModels, getAiRoles } from '#/api';
-import { $t } from '#/locales';
 
 interface CostRow {
   amount: number;
@@ -70,15 +68,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.models.description')"
-    :title="$t('page.aurora.features.models.title')"
-  >
-    <template #extra>
-      <NButton :loading="loading" @click="load">
-        {{ $t('page.aurora.panel.refresh') }}
-      </NButton>
-    </template>
+  <Page>
     <NAlert v-if="error" class="mb-4" :title="error" type="error" />
     <NCard class="mb-4">
       <NStatistic

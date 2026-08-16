@@ -1,139 +1,112 @@
 <script lang="ts" setup>
-import type { DataTableColumns } from 'naive-ui';
+import type { OutputStreamItem } from '#/api';
 
-import type { JsonRecord, OutputStreamItem } from '#/api';
-
-import { onMounted, ref } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
 
-import {
-  NAlert,
-  NButton,
-  NCard,
-  NDataTable,
-  NSpace,
-  NSwitch,
-  NTag,
-} from 'naive-ui';
+import { NInput } from 'naive-ui';
 
-import { dialog, message } from '#/adapter/naive';
-import {
-  clearConsole,
-  getActivities,
-  getConsoleLogStatus,
-  setConsoleLog,
-} from '#/api';
-import JsonView from '#/components/aurora/json-view.vue';
-import { $t } from '#/locales';
+import { getActivities } from '#/api';
 
-const activities = ref<OutputStreamItem[]>([]);
+interface LogLine {
+  at: string;
+  kind: 'error' | 'output' | 'system';
+  text: string;
+}
+
+const lines = ref<LogLine[]>([]);
 const cursor = ref(0);
-const consoleStatus = ref<JsonRecord>({});
-const consoleEnabled = ref(false);
-const loading = ref(false);
-const error = ref('');
+const logBody = ref<HTMLElement>();
+let pollTimer: ReturnType<typeof setInterval> | undefined;
 
-const columns: DataTableColumns<OutputStreamItem> = [
-  { key: 'cursor', title: 'Cursor', width: 90 },
-  { key: 'kind', title: 'Kind', width: 100 },
-  { key: 'session_id', title: 'Session', ellipsis: { tooltip: true } },
-  { key: 'task_id', title: 'Task', ellipsis: { tooltip: true } },
-  { key: 'text', title: $t('page.aurora.panel.output') },
-  { key: 'at', title: $t('page.aurora.panel.createdAt') },
-];
+const logText = computed(() =>
+  lines.value
+    .map((line) => {
+      const prefix = line.kind === 'error' ? '[error]' : '[log]';
+      return `${line.at} ${prefix} ${line.text}`;
+    })
+    .join('\n'),
+);
 
-async function load(reset = false) {
-  loading.value = true;
-  error.value = '';
-  try {
-    if (reset) {
-      cursor.value = 0;
-      activities.value = [];
+function scrollBottom() {
+  void nextTick(() => {
+    const textarea = logBody.value?.querySelector('textarea');
+    if (textarea) {
+      textarea.scrollTop = textarea.scrollHeight;
     }
-    const [page, status] = await Promise.all([
-      getActivities(cursor.value, 64),
-      getConsoleLogStatus(),
-    ]);
-    const known = new Set(activities.value.map((item) => item.activity_id));
-    activities.value.push(
-      ...page.items.filter((item) => !known.has(item.activity_id)),
-    );
-    cursor.value = page.next_cursor;
-    consoleStatus.value = status;
-    consoleEnabled.value = Boolean(status.enabled);
-  } catch (loadError) {
-    error.value = (loadError as Error).message;
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function toggleConsole(checked: boolean | number | string) {
-  const enabled = checked === true;
-  try {
-    await setConsoleLog(enabled);
-    consoleEnabled.value = enabled;
-    await load(false);
-  } catch {
-    consoleEnabled.value = !enabled;
-  }
-}
-
-function confirmClear() {
-  dialog.warning({
-    content: $t('page.aurora.panel.logs.clearHelp'),
-    title: $t('page.aurora.panel.logs.clear'),
-    async onPositiveClick() {
-      await clearConsole();
-      message.success($t('page.aurora.panel.logs.clearResult'));
-    },
   });
 }
 
-onMounted(() => load(true));
+function formatTime(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleTimeString();
+}
+
+function appendOutput(item: OutputStreamItem) {
+  cursor.value = Math.max(cursor.value, item.cursor);
+  lines.value.push({
+    at: formatTime(item.at),
+    kind: item.kind === 'error' ? 'error' : 'output',
+    text: item.text,
+  });
+  scrollBottom();
+}
+
+async function loadHistory() {
+  try {
+    const page = await getActivities(0, 200);
+    page.items.forEach(appendOutput);
+    cursor.value = page.next_cursor;
+  } catch {
+    // Global request handler reports transport errors.
+  }
+}
+
+async function pollActivities() {
+  try {
+    const page = await getActivities(cursor.value, 64);
+    page.items.forEach(appendOutput);
+    cursor.value = page.next_cursor;
+  } catch {
+    // Keep log stream alive even when polling fails.
+  }
+}
+
+onMounted(async () => {
+  await loadHistory();
+  pollTimer = setInterval(pollActivities, 2000);
+});
+
+onBeforeUnmount(() => {
+  if (pollTimer) clearInterval(pollTimer);
+});
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.logs.description')"
-    :title="$t('page.aurora.features.logs.title')"
-  >
-    <template #extra>
-      <NSpace align="center">
-        <NTag type="warning">console_only</NTag>
-        <span>Terminal log</span>
-        <NSwitch :value="consoleEnabled" @update:value="toggleConsole" />
-        <NButton type="error" @click="confirmClear">
-          {{ $t('page.aurora.panel.logs.clear') }}
-        </NButton>
-      </NSpace>
-    </template>
-    <NAlert v-if="error" class="mb-4" :title="error" type="error" />
-    <NAlert
-      class="mb-4"
-      :title="$t('page.aurora.panel.logs.consoleScope')"
-      type="info"
-    />
-    <NCard class="mb-4" title="Console status">
-      <JsonView :value="consoleStatus" />
-    </NCard>
-    <NCard title="Output activities">
-      <NDataTable
-        :columns="columns"
-        :data="activities"
-        :loading="loading"
-        :pagination="false"
-        size="small"
+  <Page>
+    <div ref="logBody" class="log-body">
+      <NInput
+        class="log-textarea"
+        placeholder="AuroraBot 运行日志"
+        readonly
+        type="textarea"
+        :value="logText"
       />
-      <div class="mt-4 flex justify-end gap-2">
-        <NButton @click="load(true)">
-          {{ $t('page.aurora.panel.refresh') }}
-        </NButton>
-        <NButton type="primary" :loading="loading" @click="load(false)">
-          {{ $t('page.aurora.panel.loadMore') }}
-        </NButton>
-      </div>
-    </NCard>
+    </div>
   </Page>
 </template>
+
+<style scoped>
+.log-body {
+  height: 100%;
+  min-height: 420px;
+}
+
+.log-textarea {
+  height: 100%;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.7;
+}
+</style>

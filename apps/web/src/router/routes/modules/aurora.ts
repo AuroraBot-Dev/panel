@@ -26,6 +26,20 @@ const realFeature = (
 const routes: RouteRecordRaw[] = [
   {
     ...realFeature(
+      'Chat',
+      '/chat',
+      'chatConsole',
+      'lucide:messages-square',
+      () => import('#/views/aurora/chat-console.vue'),
+    ),
+    meta: {
+      icon: 'lucide:messages-square',
+      order: -90,
+      title: $t('page.aurora.nav.chat'),
+    },
+  },
+  {
+    ...realFeature(
       'AgentObservation',
       '/observation',
       'observation',
@@ -34,35 +48,9 @@ const routes: RouteRecordRaw[] = [
     ),
     meta: {
       icon: 'lucide:activity',
-      order: -90,
+      order: -80,
       title: $t('page.aurora.nav.observation'),
     },
-  },
-  {
-    name: 'Chat',
-    path: '/chat',
-    redirect: '/chat/console',
-    meta: {
-      icon: 'lucide:messages-square',
-      order: -80,
-      title: $t('page.aurora.nav.chat'),
-    },
-    children: [
-      realFeature(
-        'ChatConsole',
-        'console',
-        'chatConsole',
-        'lucide:bot-message-square',
-        () => import('#/views/aurora/chat-console.vue'),
-      ),
-      realFeature(
-        'Conversations',
-        'conversations',
-        'conversations',
-        'lucide:message-circle-more',
-        () => import('#/views/aurora/conversations.vue'),
-      ),
-    ],
   },
   {
     name: 'Configuration',
@@ -98,45 +86,12 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
-    name: 'Resources',
-    path: '/resources',
-    redirect: '/resources/emoji',
-    meta: {
-      icon: 'lucide:library-big',
-      order: -60,
-      title: $t('page.aurora.nav.resources'),
-    },
-    children: [
-      feature('EmojiPacks', 'emoji', 'emoji', 'lucide:smile-plus'),
-      feature(
-        'Expressions',
-        'expressions',
-        'expressions',
-        'lucide:message-square-text',
-      ),
-      feature(
-        'BlockedWords',
-        'blocked-words',
-        'blockedWords',
-        'lucide:badge-x',
-      ),
-      feature('Learning', 'learning', 'learning', 'lucide:brain-circuit'),
-      realFeature(
-        'Memory',
-        'memory',
-        'memory',
-        'lucide:database-zap',
-        () => import('#/views/aurora/memory.vue'),
-      ),
-    ],
-  },
-  {
     name: 'Extensions',
     path: '/extensions',
     redirect: '/extensions/plugins',
     meta: {
       icon: 'lucide:blocks',
-      order: -50,
+      order: -60,
       title: $t('page.aurora.nav.extensions'),
     },
     children: [
@@ -155,6 +110,46 @@ const routes: RouteRecordRaw[] = [
         () => import('#/views/aurora/apps.vue'),
       ),
       feature('Marketplace', 'marketplace', 'marketplace', 'lucide:store'),
+    ],
+  },
+  {
+    name: 'Resources',
+    path: '/resources',
+    redirect: '/resources/memory',
+    meta: {
+      icon: 'lucide:library-big',
+      order: -50,
+      title: $t('page.aurora.nav.resources'),
+    },
+    children: [
+      realFeature(
+        'Memory',
+        'memory',
+        'memory',
+        'lucide:database-zap',
+        () => import('#/views/aurora/memory.vue'),
+      ),
+      realFeature(
+        'Conversations',
+        'conversations',
+        'conversations',
+        'lucide:message-circle-more',
+        () => import('#/views/aurora/conversations.vue'),
+      ),
+      feature('EmojiPacks', 'emoji', 'emoji', 'lucide:smile-plus'),
+      feature(
+        'Expressions',
+        'expressions',
+        'expressions',
+        'lucide:message-square-text',
+      ),
+      feature(
+        'BlockedWords',
+        'blocked-words',
+        'blockedWords',
+        'lucide:badge-x',
+      ),
+      feature('Learning', 'learning', 'learning', 'lucide:brain-circuit'),
     ],
   },
   {
