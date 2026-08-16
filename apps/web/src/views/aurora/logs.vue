@@ -96,10 +96,7 @@ onMounted(() => load(true));
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.logs.description')"
-    :title="$t('page.aurora.features.logs.title')"
-  >
+  <Page>
     <template #extra>
       <NSpace align="center">
         <NTag type="warning">console_only</NTag>

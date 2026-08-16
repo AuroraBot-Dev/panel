@@ -135,10 +135,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.plugins.description')"
-    :title="$t('page.aurora.features.plugins.title')"
-  >
+  <Page>
     <template #extra>
       <NButton :loading="loading" @click="load">
         {{ $t('page.aurora.panel.refresh') }}

@@ -86,10 +86,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.panel.conversations.description')"
-    :title="$t('page.aurora.features.conversations.title')"
-  >
+  <Page>
     <NCard>
       <div class="mb-4 flex w-full max-w-2xl gap-2">
         <NInput

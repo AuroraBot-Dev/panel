@@ -60,10 +60,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.prompts.description')"
-    :title="$t('page.aurora.features.prompts.title')"
-  >
+  <Page>
     <NCard>
       <div class="mb-4 flex w-full max-w-3xl gap-2">
         <NSelect

@@ -205,10 +205,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.chatConsole.description')"
-    :title="$t('page.aurora.features.chatConsole.title')"
-  >
+  <Page>
     <template #extra>
       <NTag :type="connected ? 'success' : 'warning'">
         {{ connected ? 'WebSocket' : $t('page.aurora.panel.chat.polling') }}

@@ -266,10 +266,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <Page
-    :description="$t('page.aurora.features.observation.description')"
-    :title="$t('page.aurora.features.observation.title')"
-  >
+  <Page>
     <template #extra>
       <NSpace>
         <NInputNumber v-model:value="limit" :max="500" :min="1" />

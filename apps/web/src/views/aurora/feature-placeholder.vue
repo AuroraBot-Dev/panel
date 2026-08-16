@@ -26,10 +26,7 @@ const details = computed(() => [
 </script>
 
 <template>
-  <Page
-    :description="$t(`${prefix}.description`)"
-    :title="$t(`${prefix}.title`)"
-  >
+  <Page>
     <template #extra>
       <NTag type="warning">{{ $t('page.aurora.placeholder.badge') }}</NTag>
     </template>
