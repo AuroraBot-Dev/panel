@@ -1,14 +1,4 @@
-import {
-  defineOverridesPreferences,
-  definePreferencesExtension,
-} from '@vben/preferences';
-
-interface WebNaivePreferencesExtension {
-  defaultTableSize: number;
-  enableFormFullscreen: boolean;
-  reportTitle: string;
-  tenantMode: 'multi' | 'single';
-}
+import { defineOverridesPreferences } from '@vben/preferences';
 
 /**
  * @description 项目配置文件
@@ -68,52 +58,3 @@ export const overridesPreferences = defineOverridesPreferences({
     ],
   },
 });
-
-export const preferencesExtension =
-  definePreferencesExtension<WebNaivePreferencesExtension>({
-    tabLabel: 'preferences.naive.tabLabel',
-    title: 'preferences.naive.title',
-    fields: [
-      {
-        component: 'switch',
-        defaultValue: true,
-        key: 'enableFormFullscreen',
-        label: 'preferences.naive.fields.enableFormFullscreen.label',
-        tip: 'preferences.naive.fields.enableFormFullscreen.tip',
-      },
-      {
-        component: 'select',
-        defaultValue: 'single',
-        key: 'tenantMode',
-        label: 'preferences.naive.fields.tenantMode.label',
-        options: [
-          {
-            label: 'preferences.naive.fields.tenantMode.options.single.label',
-            value: 'single',
-          },
-          {
-            label: 'preferences.naive.fields.tenantMode.options.multi.label',
-            value: 'multi',
-          },
-        ],
-      },
-      {
-        component: 'number',
-        componentProps: {
-          max: 200,
-          min: 10,
-          step: 10,
-        },
-        defaultValue: 20,
-        key: 'defaultTableSize',
-        label: 'preferences.naive.fields.defaultTableSize.label',
-      },
-      {
-        component: 'input',
-        defaultValue: '',
-        key: 'reportTitle',
-        label: 'preferences.naive.fields.reportTitle.label',
-        placeholder: 'preferences.naive.fields.reportTitle.placeholder',
-      },
-    ],
-  });
