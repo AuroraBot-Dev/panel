@@ -315,11 +315,11 @@ onBeforeUnmount(() => {
 <style scoped>
 .chat-card {
   position: relative;
-  max-width: min(90%, 1100px);
-  height: calc(100vh - 96px);
+  width: 100%;
+  height: calc(100vh - 85px);
   min-height: 420px;
-  max-height: calc(100vh - 96px);
-  margin: 0 auto;
+  max-height: calc(100vh - 85px);
+  margin: 0;
   overflow: hidden;
 }
 
@@ -379,7 +379,10 @@ onBeforeUnmount(() => {
   bottom: 0;
   left: 0;
   z-index: 10;
-  padding: 0 16px 8px;
+  padding: 12px 16px 8px;
+  background: color-mix(in srgb, hsl(var(--card)) 72%, transparent);
+  border-top: 1px solid hsl(var(--border));
+  backdrop-filter: blur(12px);
 }
 
 .chat-input-box {
