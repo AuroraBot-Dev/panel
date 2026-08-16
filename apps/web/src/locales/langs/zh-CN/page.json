@@ -59,10 +59,7 @@
       "auth": {
         "token": "启动令牌",
         "tokenPlaceholder": "输入 data/ops/Token.txt 中的令牌",
-        "tokenRequired": "请输入启动令牌",
-        "help": "令牌仅用于换取面板会话，不会保存在浏览器中。",
-        "online": "AuroraBot 后端在线",
-        "offline": "无法连接 AuroraBot 后端"
+        "tokenRequired": "请输入启动令牌"
       },
       "overview": {
         "description": "集中查看 AuroraBot 的实时运行状态、任务、费用与记忆概览。",
@@ -245,7 +242,10 @@
       },
       "chatAvatars": {
         "title": "聊天头像设置",
-        "description": "设置聊天界面中 Bot 与用户头像。"
+        "description": "设置聊天界面中 Bot 与用户头像图标。",
+        "botName": "AuroraBot",
+        "botDesc": "聊天中的 AI 助手",
+        "operator": "面板操作员"
       },
       "logs": {
         "title": "运行日志",

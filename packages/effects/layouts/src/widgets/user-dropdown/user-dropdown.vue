@@ -371,33 +371,35 @@ if (preferences.shortcutKeys.enable) {
     <DropdownMenuContent class="mr-2 min-w-60 p-0 pb-1">
       <div ref="refContent">
         <DropdownMenuLabel class="flex items-center p-3">
-          <VbenAvatar
-            :alt="text"
-            :src="avatar"
-            class="size-12"
-            dot
-            dot-class="bottom-0 right-1 border-2 size-4 bg-green-500"
-          />
-          <div class="ml-2 w-full">
-            <div
-              v-if="tagText || text || $slots.tagText"
-              class="mb-1 flex items-center text-sm font-medium text-foreground"
-            >
-              {{ text }}
-              <slot name="tagText">
-                <Badge
-                  v-if="tagText"
-                  variant="secondary"
-                  class="ml-2 text-green-400"
-                >
-                  {{ tagText }}
-                </Badge>
-              </slot>
+          <slot name="label">
+            <VbenAvatar
+              :alt="text"
+              :src="avatar"
+              class="size-12"
+              dot
+              dot-class="bottom-0 right-1 border-2 size-4 bg-green-500"
+            />
+            <div class="ml-2 w-full">
+              <div
+                v-if="tagText || text || $slots.tagText"
+                class="mb-1 flex items-center text-sm font-medium text-foreground"
+              >
+                {{ text }}
+                <slot name="tagText">
+                  <Badge
+                    v-if="tagText"
+                    variant="secondary"
+                    class="ml-2 text-green-400"
+                  >
+                    {{ tagText }}
+                  </Badge>
+                </slot>
+              </div>
+              <div class="text-xs font-normal text-muted-foreground">
+                {{ description }}
+              </div>
             </div>
-            <div class="text-xs font-normal text-muted-foreground">
-              {{ description }}
-            </div>
-          </div>
+          </slot>
         </DropdownMenuLabel>
         <DropdownMenuSeparator v-if="menus?.length" />
         <DropdownMenuItem

@@ -2,10 +2,13 @@ import type { AttachmentRecord } from '../types';
 
 import { useAccessStore } from '@vben/stores';
 
-import { clearPanelSession, panelApiUrl } from '../client';
+import { clearPanelSession, isOfflinePanelToken, panelApiUrl } from '../client';
 
 async function authenticatedFetch(path: string, init?: RequestInit) {
   const accessStore = useAccessStore();
+  if (isOfflinePanelToken(accessStore.accessToken)) {
+    throw new Error('Offline mode: backend is not connected');
+  }
   const headers = new Headers(init?.headers);
   if (accessStore.accessToken) {
     headers.set('Authorization', `Bearer ${accessStore.accessToken}`);

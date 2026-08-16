@@ -59,10 +59,7 @@
       "auth": {
         "token": "Bootstrap token",
         "tokenPlaceholder": "Token from data/ops/Token.txt",
-        "tokenRequired": "Enter the bootstrap token",
-        "help": "The bootstrap token is only exchanged for a panel session and is not stored.",
-        "online": "AuroraBot backend is online",
-        "offline": "AuroraBot backend is unavailable"
+        "tokenRequired": "Enter the bootstrap token"
       },
       "overview": {
         "description": "Monitor AuroraBot runtime health, tasks, cost, and memory status.",
@@ -245,7 +242,10 @@
       },
       "chatAvatars": {
         "title": "チャットアバター設定",
-        "description": "チャットのBotとユーザーアバターをカスタマイズします。"
+        "description": "チャットのBotとユーザーアバターアイコンをカスタマイズします。",
+        "botName": "AuroraBot",
+        "botDesc": "チャットのAIアシスタント",
+        "operator": "パネルオペレーター"
       },
       "logs": {
         "title": "Runtime logs",

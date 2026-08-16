@@ -18,6 +18,7 @@ import {
   downloadAttachment,
   getActivities,
   getMessages,
+  isOfflinePanelToken,
   PANEL_OWNER,
   panelWebSocketUrl,
   sendMessage,
@@ -50,10 +51,6 @@ let socket: undefined | WebSocket;
 let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 let pollTimer: ReturnType<typeof setInterval> | undefined;
 let disposed = false;
-
-function avatarUrl(line: ChatLine) {
-  return line.kind === 'user' ? chatAvatar.userUrl : chatAvatar.botUrl;
-}
 
 function avatarIcon(line: ChatLine) {
   return line.kind === 'user' ? chatAvatar.userIcon : chatAvatar.botIcon;
@@ -124,7 +121,13 @@ async function pollActivities() {
 }
 
 function connect() {
-  if (disposed || !accessStore.accessToken) return;
+  if (
+    disposed ||
+    !accessStore.accessToken ||
+    isOfflinePanelToken(accessStore.accessToken)
+  ) {
+    return;
+  }
   socket?.close();
   socket = new WebSocket(panelWebSocketUrl(accessStore.accessToken));
   socket.addEventListener('open', () => {
@@ -240,13 +243,8 @@ onBeforeUnmount(() => {
             class="chat-avatar"
             :size="32"
             round
-            :src="avatarUrl(line) || undefined"
           >
-            <IconifyIcon
-              v-if="!avatarUrl(line)"
-              :icon="avatarIcon(line)"
-              class="size-4"
-            />
+            <IconifyIcon :icon="avatarIcon(line)" class="size-4" />
           </NAvatar>
           <div class="chat-bubble">
             <small>{{ line.kind }} · {{ line.at }}</small>
@@ -257,13 +255,8 @@ onBeforeUnmount(() => {
             class="chat-avatar"
             :size="32"
             round
-            :src="avatarUrl(line) || undefined"
           >
-            <IconifyIcon
-              v-if="!avatarUrl(line)"
-              :icon="avatarIcon(line)"
-              class="size-4"
-            />
+            <IconifyIcon :icon="avatarIcon(line)" class="size-4" />
           </NAvatar>
         </div>
       </div>

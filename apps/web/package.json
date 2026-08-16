@@ -41,7 +41,6 @@
     "naive-ui": "catalog:",
     "pinia": "catalog:",
     "vue": "catalog:",
-    "vue-cropper": "catalog:",
     "vue-router": "catalog:"
   },
   "devDependencies": {
