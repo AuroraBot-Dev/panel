@@ -286,6 +286,9 @@ onBeforeUnmount(() => {
                 <IconifyIcon icon="lucide:plus" class="size-5" />
               </template>
             </NButton>
+            <p class="chat-ai-hint">
+              {{ $t('page.aurora.panel.chat.aiHint') }}
+            </p>
             <NButton
               circle
               size="medium"
@@ -306,7 +309,6 @@ onBeforeUnmount(() => {
             @change="selectFile"
           />
         </div>
-        <p class="chat-ai-hint">{{ $t('page.aurora.panel.chat.aiHint') }}</p>
       </div>
     </div>
   </Page>
@@ -411,7 +413,8 @@ onBeforeUnmount(() => {
 }
 
 .chat-ai-hint {
-  margin: 6px 0 0;
+  flex: 1;
+  margin: 0 8px;
   font-size: 12px;
   line-height: 1.4;
   color: hsl(var(--muted-foreground));
