@@ -20,7 +20,6 @@ import {
   downloadAttachment,
   getActivities,
   getMessages,
-  isOfflinePanelToken,
   PANEL_OWNER,
   panelWebSocketUrl,
   sendMessage,
@@ -144,13 +143,7 @@ async function pollActivities() {
 }
 
 function connect() {
-  if (
-    disposed ||
-    !accessStore.accessToken ||
-    isOfflinePanelToken(accessStore.accessToken)
-  ) {
-    return;
-  }
+  if (disposed || !accessStore.accessToken) return;
   socket?.close();
   socket = new WebSocket(panelWebSocketUrl(accessStore.accessToken));
   socket.addEventListener('open', () => {

@@ -20,17 +20,6 @@ const { apiURL: configuredApiURL } = useAppConfig(
 );
 const apiURL = configuredApiURL || '/api';
 
-/**
- * 离线调试专用 Token：输入该 Token 后直接进入面板本地调试模式，不连接后端服务。
- */
-export const OFFLINE_PANEL_TOKEN = 'local';
-
-export const OFFLINE_PANEL_EXPIRES_AT = '2099-12-31T23:59:59Z';
-
-export function isOfflinePanelToken(token: null | string): boolean {
-  return token === OFFLINE_PANEL_TOKEN;
-}
-
 function formatToken(token: null | string) {
   return token ? `Bearer ${token}` : null;
 }
@@ -73,9 +62,6 @@ function createBodyClient(
     client.addRequestInterceptor({
       fulfilled: async (config) => {
         const accessStore = useAccessStore();
-        if (isOfflinePanelToken(accessStore.accessToken)) {
-          throw new Error('Offline mode: backend is not connected');
-        }
         if (
           accessStore.accessTokenExpiresAt &&
           Date.parse(accessStore.accessTokenExpiresAt) <= Date.now()
